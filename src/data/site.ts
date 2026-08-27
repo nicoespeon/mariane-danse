@@ -5,9 +5,8 @@ export const site = {
   accroche:
     "Cours de Zumba pour aînés, enfants et familles — Laval, Montréal et la Rive-Nord",
   courriel: "marianecarlo1705@gmail.com",
-  // TODO: confirmer le numéro à afficher publiquement
-  telephone: "+15145550123",
-  telephoneAffiche: "(514) 555-0123",
+  telephone: "+14385025492",
+  telephoneAffiche: "(438) 502-5492",
   ville: "Laval, Québec",
   // Bascule quand Mariane aura confirmé qu'elle veut afficher son Instagram
   instagram: {
