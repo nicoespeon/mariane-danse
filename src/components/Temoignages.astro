@@ -1,0 +1,81 @@
+---
+import { getCollection } from "astro:content";
+
+// Tant qu'aucun témoignage n'est confirmé, la section disparaît du build
+// plutôt que d'afficher du faux.
+const temoignages = await getCollection(
+  "temoignages",
+  ({ data }) => data.publie,
+);
+---
+
+{
+  temoignages.length > 0 && (
+    <section class="section section--creuse" id="temoignages">
+      <div class="enveloppe">
+        <h2>Ce qu'en disent les organismes</h2>
+        <ul class="temoignages">
+          {temoignages.map((temoignage) => (
+            <li>
+              <figure class="temoignage">
+                <blockquote>
+                  <p>{temoignage.data.citation}</p>
+                </blockquote>
+                <figcaption>
+                  <strong>{temoignage.data.auteur}</strong>
+                  <span>
+                    {temoignage.data.fonction}, {temoignage.data.organisme}
+                  </span>
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .temoignages {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  }
+
+  .temoignage {
+    margin: 0;
+    padding: 1.75rem;
+    background: #fff;
+    border-radius: var(--rayon-large);
+    box-shadow: var(--ombre-douce);
+  }
+
+  .temoignage blockquote {
+    margin: 0 0 1rem;
+  }
+
+  .temoignage blockquote p {
+    font-family: var(--police-titre);
+    font-size: 1.2rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .temoignage blockquote p::before {
+    content: "« ";
+  }
+
+  .temoignage blockquote p::after {
+    content: " »";
+  }
+
+  .temoignage figcaption {
+    display: grid;
+    font-size: 0.9rem;
+    color: var(--encre-doux);
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+import Base from "../layouts/Base.astro";
+import Navigation from "../components/Navigation.astro";
+import Hero from "../components/Hero.astro";
+import Offres from "../components/Offres.astro";
+import Bienfaits from "../components/Bienfaits.astro";
+import Lieux from "../components/Lieux.astro";
+import Galerie from "../components/Galerie.astro";
+import Temoignages from "../components/Temoignages.astro";
+import Contact from "../components/Contact.astro";
+import Pied from "../components/Pied.astro";
+import { site, zonesDesservies } from "../data/site";
+import { getCollection } from "astro:content";
+
+const offres = (await getCollection("offres")).sort(
+  (a, b) => a.data.ordre - b.data.ordre,
+);
+
+const donneesStructurees = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: site.nom,
+  description: site.accroche,
+  url: Astro.site?.href,
+  email: site.courriel,
+  telephone: site.telephone,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Laval",
+    addressRegion: "QC",
+    addressCountry: "CA",
+  },
+  areaServed: zonesDesservies.map((zone) => ({
+    "@type": "City",
+    name: zone,
+  })),
+  makesOffer: offres.map((offre) => ({
+    "@type": "Offer",
+    itemOffered: {
+      "@type": "Service",
+      name: offre.data.titre,
+      description: offre.data.resume,
+      audience: { "@type": "Audience", audienceType: offre.data.pour },
+    },
+  })),
+};
+---
+
+<Base
+  titre={`${site.nom} — Cours de Zumba à Laval, Montréal et sur la Rive-Nord`}
+  description={`${site.accroche}. Zumba Gold pour aînés, Zumba Kids, cours mamans-bébés et animations d'événements.`}
+>
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(donneesStructurees)}
+    slot="tete"
+  />
+  <Navigation slot="navigation" />
+
+  <Hero />
+  <Offres />
+  <Bienfaits />
+  <Lieux />
+  <Galerie />
+  <Temoignages />
+  <Contact />
+
+  <Pied slot="pied" />
+</Base>

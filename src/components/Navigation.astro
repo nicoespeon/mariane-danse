@@ -1,0 +1,98 @@
+---
+import { site } from "../data/site";
+
+const liens = [
+  { href: "#offres", texte: "Les cours" },
+  { href: "#bienfaits", texte: "Bienfaits" },
+  { href: "#lieux", texte: "Où" },
+  { href: "#galerie", texte: "En images" },
+  { href: "#contact", texte: "Contact" },
+];
+---
+
+<header class="entete">
+  <nav class="entete__barre enveloppe" aria-label="Navigation principale">
+    <a class="entete__marque" href="#contenu">{site.nom}</a>
+    <ul class="entete__liens">
+      {
+        liens.map((lien) => (
+          <li>
+            <a href={lien.href}>{lien.texte}</a>
+          </li>
+        ))
+      }
+    </ul>
+    <a class="bouton bouton--principal entete__action" href="#contact">
+      Me joindre
+    </a>
+  </nav>
+</header>
+
+<style>
+  .entete {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgb(255 248 240 / 0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgb(20 38 44 / 0.08);
+  }
+
+  .entete__barre {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 4.25rem;
+    padding-block: 0.5rem;
+  }
+
+  .entete__marque {
+    font-family: var(--police-titre);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--encre);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .entete__liens {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0 auto 0 1rem;
+    padding: 0;
+  }
+
+  .entete__liens a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    color: var(--encre-doux);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .entete__liens a:hover {
+    color: var(--mer-sombre);
+    text-decoration: underline;
+  }
+
+  .entete__action {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  /* Sur mobile la barre se réduit à la marque + le bouton d'action :
+     les ancres restent atteignables en faisant défiler la page. */
+  @media (max-width: 60rem) {
+    .entete__liens {
+      display: none;
+    }
+
+    .entete__barre {
+      justify-content: space-between;
+    }
+  }
+</style>

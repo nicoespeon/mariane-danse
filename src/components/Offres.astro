@@ -1,0 +1,104 @@
+---
+import { getCollection } from "astro:content";
+
+const offres = (await getCollection("offres")).sort(
+  (a, b) => a.data.ordre - b.data.ordre,
+);
+---
+
+<section class="section" id="offres">
+  <div class="enveloppe">
+    <h2>Ce que Mariane peut animer chez vous</h2>
+    <p class="chapeau">
+      Quatre formules, toutes adaptables à votre salle, votre horaire et le
+      niveau de votre groupe.
+    </p>
+
+    <ul class="offres">
+      {
+        offres.map((offre) => (
+          <li class="offre">
+            <span class="offre__emoji" aria-hidden="true">
+              {offre.data.emoji}
+            </span>
+            <h3>{offre.data.titre}</h3>
+            <p class="offre__pour">{offre.data.pour}</p>
+            <p>{offre.data.resume}</p>
+            <ul class="offre__bienfaits">
+              {offre.data.bienfaits.map((bienfait) => (
+                <li>{bienfait}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .offres {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+    /* Grille explicite plutôt qu'auto-fit : à quatre offres, auto-fit laisse
+       régulièrement une carte orpheline sur sa propre ligne. */
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 40rem) {
+    .offres {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 68rem) {
+    .offres {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .offre {
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid rgb(20 38 44 / 0.08);
+    border-radius: var(--rayon-large);
+    box-shadow: var(--ombre-douce);
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .offre:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--ombre-levee);
+  }
+
+  .offre__emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .offre__pour {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--mer);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+  }
+
+  .offre__bienfaits {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--encre-doux);
+    font-size: 0.95rem;
+  }
+
+  .offre__bienfaits li {
+    margin-bottom: 0.35rem;
+  }
+</style>

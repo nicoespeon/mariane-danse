@@ -1,0 +1,100 @@
+---
+import { site } from "../data/site";
+import Signature from "./Signature.astro";
+import Soleil from "./Soleil.astro";
+import MediaAbsent from "./MediaAbsent.astro";
+---
+
+<section class="hero">
+  <div class="hero__soleil" aria-hidden="true"><Soleil /></div>
+
+  <div class="enveloppe hero__grille">
+    <div class="hero__texte">
+      <p class="hero__sur-titre">{site.metier} · {site.ville}</p>
+      <h1>{site.nom}</h1>
+      <p class="hero__accroche">{site.accroche}</p>
+      <p class="hero__signature">
+        <Signature texte={site.signature} />
+      </p>
+
+      <div class="hero__actions">
+        <a class="bouton bouton--principal" href="#contact">
+          Demander une soumission
+        </a>
+        <a class="bouton bouton--fantome" href="#offres">Voir les cours</a>
+      </div>
+    </div>
+
+    <div class="hero__media">
+      <MediaAbsent
+        legende="Vidéo d'accueil — 8 à 12 s, en boucle, sans son. Mariane anime, le groupe suit."
+        ratio="4 / 3"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3rem, 8vw, 6rem) clamp(3rem, 8vw, 5rem);
+    background:
+      radial-gradient(
+        120% 90% at 85% 0%,
+        var(--sable-creux) 0%,
+        transparent 60%
+      ),
+      var(--sable);
+  }
+
+  .hero__soleil {
+    position: absolute;
+    top: -6rem;
+    right: -6rem;
+    width: min(26rem, 55vw);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .hero__grille {
+    position: relative;
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 56rem) {
+    .hero__grille {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  .hero__sur-titre {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mer);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero__accroche {
+    font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+    color: var(--encre-doux);
+    max-width: 34ch;
+  }
+
+  .hero__signature {
+    font-size: clamp(1.3rem, 3vw, 1.75rem);
+    color: var(--soleil-vif);
+    margin-bottom: 2rem;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+</style>

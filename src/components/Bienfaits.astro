@@ -1,0 +1,81 @@
+---
+import Vague from "./Vague.astro";
+
+// Section écrite pour les coordonnateurs de loisirs : ce qu'ils devront
+// justifier auprès de leur direction, pas ce qui fait rêver le grand public.
+const arguments_ = [
+  {
+    titre: "Une activité que les résidents réclament",
+    texte:
+      "La musique fait le travail. Les participants reviennent d'eux-mêmes, semaine après semaine, sans qu'il faille les convaincre.",
+  },
+  {
+    titre: "De la mobilité, pas de la performance",
+    texte:
+      "Chaque mouvement a sa variante assise. Personne n'est mis de côté à cause d'une hanche, d'un déambulateur ou d'un mauvais jour.",
+  },
+  {
+    titre: "Zéro logistique de votre côté",
+    texte:
+      "Mariane arrive avec sa musique et son matériel. Il suffit d'une salle commune et de chaises.",
+  },
+  {
+    titre: "Une intervenante fiable",
+    texte:
+      "Des contrats récurrents depuis plusieurs années avec des résidences, des centres communautaires et des services parascolaires de la région.",
+  },
+];
+---
+
+<Vague couleur="var(--mer-sombre)" />
+
+<section class="section section--mer" id="bienfaits">
+  <div class="enveloppe">
+    <h2>Pourquoi les organismes la rappellent</h2>
+    <p class="chapeau">
+      Ce que ça change concrètement pour vos participants — et pour vous.
+    </p>
+
+    <ul class="arguments">
+      {
+        arguments_.map((argument) => (
+          <li class="argument">
+            <h3>{argument.titre}</h3>
+            <p>{argument.texte}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<Vague couleur="var(--mer-sombre)" retournee={true} />
+
+<style>
+  .arguments {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  }
+
+  .argument h3 {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .argument h3::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 0.35rem;
+    border-radius: 999px;
+    background: var(--soleil);
+  }
+
+  .argument p {
+    color: var(--mer-brume);
+    margin: 0;
+  }
+</style>

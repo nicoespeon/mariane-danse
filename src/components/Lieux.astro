@@ -1,0 +1,63 @@
+---
+import { zonesDesservies } from "../data/site";
+
+// Sert autant au visiteur qu'au référencement local : c'est la page qui doit
+// sortir sur « zumba aînés résidence laval ».
+const milieux = [
+  {
+    nom: "Résidences pour aînés",
+    detail: "Salle commune, format hebdomadaire",
+  },
+  { nom: "Centres communautaires", detail: "Sessions à la saison" },
+  { nom: "Écoles et parascolaire", detail: "Périodes de 45 à 60 minutes" },
+  { nom: "Camps de jour", detail: "Demi-journées et blocs d'animation" },
+  { nom: "Centres de périnatalité", detail: "Cours mamans-bébés" },
+  { nom: "Événements ponctuels", detail: "Initiations et portes ouvertes" },
+];
+---
+
+<section class="section section--creuse" id="lieux">
+  <div class="enveloppe">
+    <h2>Où Mariane se déplace</h2>
+    <p class="chapeau">
+      {zonesDesservies.join(", ")} et les environs. Un déplacement plus loin ? Demandez,
+      la réponse est souvent oui.
+    </p>
+
+    <ul class="milieux">
+      {
+        milieux.map((milieu) => (
+          <li class="milieu">
+            <strong>{milieu.nom}</strong>
+            <span>{milieu.detail}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .milieux {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .milieu {
+    display: grid;
+    gap: 0.15rem;
+    padding: 1rem 1.25rem;
+    background: #fff;
+    border-radius: var(--rayon);
+    border-left: 4px solid var(--mer-clair);
+  }
+
+  .milieu span {
+    font-size: 0.9rem;
+    color: var(--encre-doux);
+  }
+</style>

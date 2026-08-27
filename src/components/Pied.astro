@@ -1,0 +1,71 @@
+---
+import { site } from "../data/site";
+import Signature from "./Signature.astro";
+
+const annee = new Date().getFullYear();
+---
+
+<footer class="pied">
+  <div class="enveloppe pied__grille">
+    <p class="pied__marque">
+      <strong>{site.nom}</strong>
+      <Signature texte={site.signature} class="pied__signature" />
+    </p>
+
+    <nav aria-label="Liens de bas de page">
+      <ul class="pied__liens">
+        <li><a href="/carte/">Ma carte à montrer</a></li>
+        <li><a href="/confidentialite/">Confidentialité</a></li>
+        <li><a href={`mailto:${site.courriel}`}>{site.courriel}</a></li>
+      </ul>
+    </nav>
+
+    <p class="pied__mention">© {annee} · {site.ville}</p>
+  </div>
+</footer>
+
+<style>
+  .pied {
+    background: var(--encre);
+    color: var(--sable);
+    padding-block: 3rem 2rem;
+  }
+
+  .pied__grille {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .pied__marque {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .pied__signature {
+    color: var(--soleil);
+  }
+
+  .pied__liens {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .pied__liens a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--mer-clair);
+  }
+
+  .pied__mention {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgb(255 248 240 / 0.6);
+  }
+</style>

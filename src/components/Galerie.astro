@@ -1,0 +1,48 @@
+---
+import MediaAbsent from "./MediaAbsent.astro";
+
+// TODO: remplacer par <Image /> et <video> une fois les médias fournis.
+// Le cadrage retenu — Mariane nette au premier plan, participants de dos ou
+// flous — évite d'avoir à collecter des autorisations de droit à l'image.
+const emplacements = [
+  {
+    legende: "Zumba Gold en résidence — variante assise sur chaise",
+    ratio: "4 / 3",
+  },
+  { legende: "Zumba Kids — plan large, enfants en mouvement", ratio: "4 / 3" },
+  {
+    legende: "Portrait de Mariane — sert aussi à l'aperçu de partage",
+    ratio: "1 / 1",
+  },
+  { legende: "Vidéo verticale 15-30 s — Zumba Gold", ratio: "9 / 16" },
+  { legende: "Vidéo verticale 15-30 s — Zumba Kids", ratio: "9 / 16" },
+  { legende: "Vidéo verticale 15-30 s — mamans-bébés", ratio: "9 / 16" },
+];
+---
+
+<section class="section" id="galerie">
+  <div class="enveloppe">
+    <h2>Une séance, en images</h2>
+    <p class="chapeau">Le plus convaincant reste de voir la salle bouger.</p>
+
+    <div class="galerie">
+      {
+        emplacements.map((emplacement) => (
+          <MediaAbsent
+            legende={emplacement.legende}
+            ratio={emplacement.ratio}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .galerie {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+</style>
