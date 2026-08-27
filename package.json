@@ -9,9 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "pnpm run format:check && pnpm run check:types && pnpm run build",
+    "check": "pnpm run format:check && pnpm run check:types && pnpm run build && pnpm run check:quality",
     "check:types": "astro check",
-    "check:quality": "lhci autorun",
+    "check:quality": "node scripts/lighthouse.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "astro": "astro"
@@ -23,15 +23,13 @@
     "sharp": "0.35.4",
     "zod": "4.4.3"
   },
-  "allowScripts": {
-    "esbuild": true
-  },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@lhci/cli": "0.15.1",
     "@types/qrcode": "1.5.6",
     "prettier": "3.9.6",
     "prettier-plugin-astro": "0.14.1",
+    "puppeteer": "25.9.0",
     "qrcode": "1.5.4",
     "typescript": "6.0.3"
   },

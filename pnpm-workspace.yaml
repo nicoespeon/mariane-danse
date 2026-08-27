@@ -1,0 +1,6 @@
+# pnpm 10 bloque les scripts d'installation par défaut. Puppeteer a besoin du
+# sien : c'est lui qui télécharge le Chrome dont Lighthouse se sert.
+onlyBuiltDependencies:
+  - esbuild
+  - puppeteer
+  - sharp

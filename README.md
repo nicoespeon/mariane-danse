@@ -20,14 +20,11 @@ Le site tourne sur <http://localhost:4321>.
 pnpm check
 ```
 
-Formatage, types et build.
+Formatage, types, build, puis budgets Lighthouse : performance, accessibilité,
+SEO. C'est exactement ce que la CI exécute.
 
-```bash
-pnpm check:quality
-```
-
-Budgets Lighthouse : performance, accessibilité, SEO. Nécessite Chrome en local
-— la CI l'exécute de toute façon à chaque pull request.
+Lighthouse s'appuie sur le Chrome téléchargé par Puppeteer à l'installation, pas
+sur celui de la machine : les scores sont donc les mêmes en local et en CI.
 
 ## Déploiement
 
