@@ -1,0 +1,255 @@
+/* ---------------------------------------------------------------
+   Système visuel « mer + soleil », dérivé de la signature de marque.
+   Public final : des aînés. Le corps de texte ne descend jamais
+   sous 18px et les contrastes visent AAA.
+   --------------------------------------------------------------- */
+
+:root {
+  --sable: #fff8f0;
+  --sable-creux: #fdeedd;
+  --encre: #14262c;
+  --encre-doux: #3d565e;
+
+  --mer: #0b5c64;
+  --mer-sombre: #063f45;
+  --mer-clair: #7fd1ce;
+  --mer-brume: #d9f0ee;
+
+  --soleil: #f2a65a;
+  --soleil-vif: #e8871e;
+  --corail: #c2453e;
+
+  --rayon: 1rem;
+  --rayon-large: 2rem;
+  --mesure: 62ch;
+  --gouttiere: clamp(1.25rem, 5vw, 4rem);
+
+  --ombre-douce:
+    0 1px 2px rgb(20 38 44 / 0.06), 0 8px 24px rgb(20 38 44 / 0.08);
+  --ombre-levee:
+    0 2px 4px rgb(20 38 44 / 0.08), 0 16px 40px rgb(20 38 44 / 0.14);
+
+  --police-titre: "Fraunces Variable", "Iowan Old Style", Georgia, serif;
+  --police-texte:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* 18px de base : lisible sans zoomer, y compris à 70 ans */
+  font-size: 112.5%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--sable);
+  color: var(--encre);
+  font-family: var(--police-texte);
+  font-size: 1rem;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--police-titre);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  margin: 0 0 0.5em;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 7vw, 4.25rem);
+}
+h2 {
+  font-size: clamp(1.9rem, 4.5vw, 2.75rem);
+}
+h3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+p {
+  margin: 0 0 1em;
+  max-width: var(--mesure);
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--mer);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 0.08em;
+}
+
+a:hover {
+  color: var(--mer-sombre);
+}
+
+:focus-visible {
+  outline: 3px solid var(--soleil-vif);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* --- Structure ------------------------------------------------- */
+
+.enveloppe {
+  width: min(72rem, 100% - var(--gouttiere) * 2);
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(3.5rem, 9vw, 7rem);
+  position: relative;
+}
+
+.section--creuse {
+  background: var(--sable-creux);
+}
+
+.section--mer {
+  background: var(--mer-sombre);
+  color: var(--sable);
+}
+
+.section--mer h2,
+.section--mer h3 {
+  color: var(--sable);
+}
+
+.section--mer a {
+  color: var(--mer-clair);
+}
+
+.chapeau {
+  font-size: 1.15rem;
+  color: var(--encre-doux);
+  max-width: 52ch;
+}
+
+.section--mer .chapeau {
+  color: var(--mer-brume);
+}
+
+/* --- Boutons : 48px de haut minimum, partout ------------------- */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.6rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.bouton--principal {
+  background: var(--mer-sombre);
+  color: #fff;
+  box-shadow: var(--ombre-douce);
+}
+
+.bouton--principal:hover {
+  background: var(--encre);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: var(--ombre-levee);
+}
+
+.bouton--fantome {
+  background: transparent;
+  border-color: currentColor;
+  color: var(--mer-sombre);
+}
+
+.bouton--fantome:hover {
+  background: var(--mer-brume);
+  color: var(--mer-sombre);
+  transform: translateY(-2px);
+}
+
+.section--mer .bouton--fantome {
+  color: var(--sable);
+}
+
+.section--mer .bouton--fantome:hover {
+  background: rgb(255 255 255 / 0.12);
+  color: var(--sable);
+}
+
+/* --- Accessibilité --------------------------------------------- */
+
+.saut-navigation {
+  position: absolute;
+  left: 1rem;
+  top: -100%;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--encre);
+  color: #fff;
+  border-radius: 0 0 var(--rayon) var(--rayon);
+  text-decoration: none;
+}
+
+.saut-navigation:focus {
+  top: 0;
+  color: #fff;
+}
+
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Whimsy : tout est désactivable ---------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

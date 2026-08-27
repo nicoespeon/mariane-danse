@@ -1,0 +1,48 @@
+---
+import "@fontsource-variable/fraunces";
+import "../styles/global.css";
+
+type Props = {
+  titre: string;
+  description: string;
+  /** Les pages utilitaires (carte, confidentialité) n'ont pas la navigation */
+  navigation?: boolean;
+};
+
+const { titre, description, navigation = true } = Astro.props;
+const canonique = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="fr-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonique} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_CA" />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#0b5c64" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <slot name="tete" />
+  </head>
+
+  <body>
+    <a class="saut-navigation" href="#contenu">Aller au contenu</a>
+    {navigation && <slot name="navigation" />}
+    <main id="contenu">
+      <slot />
+    </main>
+    <slot name="pied" />
+  </body>
+</html>

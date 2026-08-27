@@ -1,0 +1,31 @@
+---
+type Props = { couleur?: string; retournee?: boolean };
+const { couleur = "var(--sable)", retournee = false } = Astro.props;
+---
+
+<div
+  class:list={["vague", { "vague--retournee": retournee }]}
+  aria-hidden="true"
+>
+  <svg viewBox="0 0 1440 90" preserveAspectRatio="none" focusable="false">
+    <path
+      fill={couleur}
+      d="M0 45c120-30 240-45 360-30s240 60 360 60 240-45 360-60 240 0 360 15v60H0z"
+    ></path>
+  </svg>
+</div>
+
+<style>
+  .vague {
+    line-height: 0;
+  }
+
+  .vague svg {
+    width: 100%;
+    height: clamp(30px, 5vw, 70px);
+  }
+
+  .vague--retournee svg {
+    transform: rotate(180deg);
+  }
+</style>
