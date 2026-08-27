@@ -13,7 +13,8 @@ const lettres = [...texte];
     {
       lettres.map((lettre, index) => (
         <span class="signature__lettre" style={`--rang: ${index}`}>
-          {lettre === " " ? " " : lettre}
+          {/* Une espace ordinaire s'écrase dans un inline-block */}
+          {lettre === " " ? "\u00a0" : lettre}
         </span>
       ))
     }
