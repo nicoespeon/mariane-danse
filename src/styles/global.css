@@ -17,6 +17,9 @@
 
   --soleil: #f2a65a;
   --soleil-vif: #e8871e;
+  /* L'orange vif tombe sous le seuil de contraste sur fond sable : dès qu'il
+     porte du texte, c'est cette version qu'on utilise. */
+  --soleil-texte: #a34f0f;
   --corail: #c2453e;
 
   --rayon: 1rem;

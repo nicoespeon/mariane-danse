@@ -1,24 +1,23 @@
 ---
 // Les lettres ondulent comme une vague — clin d'œil à « la mer qu'on voit danser ».
-// Découpées, elles deviennent illisibles pour un lecteur d'écran : on expose le
-// texte entier via aria-label et on cache les fragments.
+// Découpées, elles deviennent illisibles pour un lecteur d'écran : on double le
+// texte en version lisible et on masque les fragments.
 type Props = { texte: string; class?: string };
 const { texte, class: classe } = Astro.props;
 const lettres = [...texte];
 ---
 
-<span class:list={["signature", classe]} aria-label={texte}>
-  {
-    lettres.map((lettre, index) => (
-      <span
-        aria-hidden="true"
-        class="signature__lettre"
-        style={`--rang: ${index}`}
-      >
-        {lettre === " " ? " " : lettre}
-      </span>
-    ))
-  }
+<span class:list={["signature", classe]}>
+  <span class="visuellement-cache">{texte}</span>
+  <span aria-hidden="true">
+    {
+      lettres.map((lettre, index) => (
+        <span class="signature__lettre" style={`--rang: ${index}`}>
+          {lettre === " " ? " " : lettre}
+        </span>
+      ))
+    }
+  </span>
 </span>
 
 <style>
