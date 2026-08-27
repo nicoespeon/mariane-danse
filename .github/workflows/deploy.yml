@@ -44,14 +44,15 @@ jobs:
       # Bloque la fusion si la performance, l'accessibilité ou le SEO régressent
       - run: pnpm run check:quality
 
-      - uses: actions/upload-artifact@v4
-        if: always()
+      # Le rapport détaillé n'est écrit sur disque que lorsqu'une assertion casse
+      - uses: actions/upload-artifact@v5
+        if: failure()
         with:
           name: rapport-lighthouse
           path: .lighthouseci/
           retention-days: 7
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: site
           path: dist/
@@ -66,7 +67,7 @@ jobs:
       contents: read
       deployments: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: site
           path: dist
