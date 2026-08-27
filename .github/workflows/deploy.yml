@@ -13,7 +13,15 @@ jobs:
   verifier:
     name: Types, build et qualité
     runs-on: ubuntu-latest
+    outputs:
+      deployable: ${{ steps.secrets.outputs.deployable }}
     steps:
+      # Le contexte `secrets` n'est pas lisible depuis un `if` de job : on passe
+      # par une sortie pour que le déploiement se saute tout seul tant que
+      # Cloudflare n'est pas configuré.
+      - id: secrets
+        run: echo "deployable=${{ secrets.CLOUDFLARE_API_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v5
 
       - uses: pnpm/action-setup@v4
@@ -51,6 +59,7 @@ jobs:
   deployer:
     name: Déployer sur Cloudflare Pages
     needs: verifier
+    if: needs.verifier.outputs.deployable == 'true'
     runs-on: ubuntu-latest
     # Les PR obtiennent une préversion, `main` va en production
     permissions:
