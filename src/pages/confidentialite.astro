@@ -1,0 +1,51 @@
+---
+import Base from "../layouts/Base.astro";
+import Pied from "../components/Pied.astro";
+import { site } from "../data/site";
+---
+
+<Base
+  titre={`Confidentialité — ${site.nom}`}
+  description="Ce que devient l'information que vous transmettez via ce site."
+  navigation={false}
+>
+  <div class="section enveloppe">
+    <p><a href="/">← Retour à l'accueil</a></p>
+    <h1>Confidentialité</h1>
+
+    <h2>Ce que ce site collecte</h2>
+    <p>
+      Rien. Ce site est un ensemble de pages statiques : il n'y a ni base de
+      données, ni compte, ni témoin de connexion (cookie) de suivi.
+    </p>
+
+    <h2>Le formulaire de contact</h2>
+    <p>
+      Quand vous envoyez le formulaire, votre nom, votre courriel et votre
+      message sont acheminés par le service Web3Forms directement vers la boîte
+      courriel de Mariane. Ce service agit uniquement comme relais d'envoi et ne
+      conserve pas le contenu des messages.
+    </p>
+    <p>
+      Ce relais est situé à l'extérieur du Québec. Vos renseignements y
+      transitent donc brièvement avant d'arriver dans la boîte de Mariane. Si
+      vous préférez l'éviter, écrivez directement à
+      <a href={`mailto:${site.courriel}`}>{site.courriel}</a>.
+    </p>
+
+    <h2>Ce que Mariane en fait</h2>
+    <p>
+      Elle vous répond. Vos coordonnées ne sont ni revendues, ni partagées, ni
+      utilisées pour des envois publicitaires.
+    </p>
+
+    <h2>Vos droits</h2>
+    <p>
+      Conformément à la Loi 25, vous pouvez demander en tout temps l'accès, la
+      correction ou la suppression des renseignements vous concernant, en
+      écrivant à <a href={`mailto:${site.courriel}`}>{site.courriel}</a>.
+    </p>
+  </div>
+
+  <Pied slot="pied" />
+</Base>

@@ -1,0 +1,130 @@
+---
+import QRCode from "qrcode";
+import Base from "../layouts/Base.astro";
+import { site } from "../data/site";
+
+// Page conçue pour être tendue à bout de bras après un cours : Mariane
+// l'ouvre sur son téléphone, la personne en face scanne. Pas d'application,
+// pas de compte, pas de Linktree.
+const adresse = Astro.site?.href ?? "https://marianedanse.ca";
+
+const qr = await QRCode.toString(adresse, {
+  type: "svg",
+  margin: 0,
+  errorCorrectionLevel: "M",
+  color: { dark: "#14262c", light: "#0000" },
+});
+---
+
+<Base
+  titre={`Ma carte — ${site.nom}`}
+  description="Scannez pour retrouver Mariane."
+  navigation={false}
+>
+  <div class="carte">
+    <p class="carte__sur-titre">{site.metier}</p>
+    <h1>{site.nom}</h1>
+
+    <div class="carte__qr" set:html={qr} />
+    <p class="carte__consigne">Pointez votre appareil photo ici</p>
+
+    <div class="carte__actions">
+      <a class="bouton bouton--principal" href="/contact.vcf">
+        Ajouter à mes contacts
+      </a>
+      <a class="bouton bouton--fantome" href={`tel:${site.telephone}`}>
+        {site.telephoneAffiche}
+      </a>
+      <button
+        class="bouton bouton--fantome carte__partage"
+        type="button"
+        hidden
+      >
+        Partager
+      </button>
+    </div>
+
+    <p class="carte__retour"><a href="/">Voir le site complet</a></p>
+  </div>
+</Base>
+
+<script>
+  // Le partage natif n'existe pas partout : le bouton n'apparaît que s'il marche.
+  const bouton = document.querySelector<HTMLButtonElement>(".carte__partage");
+
+  if (bouton && navigator.share) {
+    bouton.hidden = false;
+    bouton.addEventListener("click", async () => {
+      try {
+        await navigator.share({
+          title: document.title,
+          url: new URL("/", location.href).href,
+        });
+      } catch {
+        // Partage annulé par la personne : rien à signaler.
+      }
+    });
+  }
+</script>
+
+<style>
+  .carte {
+    min-height: 100dvh;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 1rem;
+    padding: 2rem var(--gouttiere);
+    text-align: center;
+    background:
+      radial-gradient(90% 60% at 50% 0%, var(--sable-creux), transparent 70%),
+      var(--sable);
+  }
+
+  .carte__sur-titre {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mer);
+  }
+
+  .carte h1 {
+    font-size: clamp(2rem, 8vw, 3rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .carte__qr {
+    width: min(20rem, 72vw);
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: var(--rayon-large);
+    box-shadow: var(--ombre-levee);
+  }
+
+  .carte__qr :global(svg) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .carte__consigne {
+    margin: 0;
+    color: var(--encre-doux);
+    font-size: 0.95rem;
+  }
+
+  .carte__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .carte__retour {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+</style>

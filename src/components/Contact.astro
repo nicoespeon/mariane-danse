@@ -1,0 +1,272 @@
+---
+import { site } from "../data/site";
+
+// Anti-friction : plutôt qu'un champ vide, on propose des courriels déjà
+// rédigés selon qui écrit. Le visiteur n'a plus qu'à appuyer sur « Envoyer ».
+const intentions = [
+  {
+    etiquette: "Je représente un organisme",
+    aide: "Résidence, centre, école, camp de jour",
+    objet: "Demande de cours de Zumba pour notre organisme",
+    corps: `Bonjour Mariane,
+
+Nous aimerions organiser des cours pour nos participants.
+
+Organisme :
+Ville :
+Type de cours souhaité :
+Nombre de participants (environ) :
+Fréquence envisagée :
+Période souhaitée :
+
+Au plaisir de vous lire,`,
+  },
+  {
+    etiquette: "Je cherche un cours",
+    aide: "Pour moi, mon enfant ou un proche",
+    objet: "Où puis-je suivre un de vos cours ?",
+    corps: `Bonjour Mariane,
+
+J'aimerais savoir où et quand il est possible de participer à vos cours.
+
+Pour qui :
+Ville :
+Type de cours qui m'intéresse :
+
+Merci !`,
+  },
+  {
+    etiquette: "C'est pour un événement",
+    aide: "Fête, journée thématique, portes ouvertes",
+    objet: "Animation Zumba pour un événement",
+    corps: `Bonjour Mariane,
+
+Nous organisons un événement et aimerions une animation.
+
+Événement :
+Date :
+Lieu :
+Nombre de participants (environ) :
+Durée souhaitée :
+
+Merci d'avance,`,
+  },
+];
+
+const lienCourriel = ({ objet, corps }: { objet: string; corps: string }) =>
+  `mailto:${site.courriel}?subject=${encodeURIComponent(objet)}&body=${encodeURIComponent(corps)}`;
+
+// Clé publique par conception (elle n'autorise que l'envoi vers la boîte de
+// Mariane). Absente, le formulaire retombe sur un simple courriel.
+const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
+---
+
+<section class="section" id="contact">
+  <div class="enveloppe contact">
+    <div class="contact__intro">
+      <h2>Parlons de votre groupe</h2>
+      <p class="chapeau">
+        Le plus rapide : choisissez ce qui vous ressemble, le courriel s'écrit
+        tout seul.
+      </p>
+
+      <ul class="intentions">
+        {
+          intentions.map((intention) => (
+            <li>
+              <a class="intention" href={lienCourriel(intention)}>
+                <strong>{intention.etiquette}</strong>
+                <span>{intention.aide}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <ul class="coordonnees">
+        <li>
+          <a href={`mailto:${site.courriel}`}>{site.courriel}</a>
+        </li>
+        <li>
+          <a href={`tel:${site.telephone}`}>{site.telephoneAffiche}</a>
+        </li>
+        {
+          site.instagram.actif && (
+            <li>
+              <a
+                href={`https://instagram.com/${site.instagram.handle}`}
+                rel="me noopener"
+              >
+                @{site.instagram.handle}
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+
+    <form
+      class="formulaire"
+      method="POST"
+      action={cleWeb3Forms
+        ? "https://api.web3forms.com/submit"
+        : `mailto:${site.courriel}`}
+    >
+      {
+        cleWeb3Forms && (
+          <input type="hidden" name="access_key" value={cleWeb3Forms} />
+        )
+      }
+      <input
+        type="hidden"
+        name="subject"
+        value="Nouveau message depuis le site"
+      />
+      {/* Piège à robots : un humain ne remplit jamais ce champ */}
+      <input
+        type="checkbox"
+        name="botcheck"
+        class="visuellement-cache"
+        tabindex="-1"
+        autocomplete="off"
+      />
+
+      <h3>Ou écrivez-moi directement</h3>
+
+      <p class="champ">
+        <label for="nom">Votre nom</label>
+        <input id="nom" name="nom" type="text" required autocomplete="name" />
+      </p>
+
+      <p class="champ">
+        <label for="courriel">Votre courriel</label>
+        <input
+          id="courriel"
+          name="courriel"
+          type="email"
+          required
+          autocomplete="email"
+        />
+      </p>
+
+      <p class="champ">
+        <label for="message">Votre message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+      </p>
+
+      <button class="bouton bouton--principal" type="submit">Envoyer</button>
+
+      <p class="formulaire__mention">
+        Vos coordonnées sont transmises par courriel à Mariane. Elles ne sont ni
+        conservées sur ce site, ni partagées.
+        <a href="/confidentialite/">En savoir plus</a>
+      </p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  @media (min-width: 56rem) {
+    .contact {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .intentions {
+    list-style: none;
+    margin: 2rem 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .intention {
+    display: grid;
+    gap: 0.15rem;
+    min-height: 3.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--mer-brume);
+    border-radius: var(--rayon);
+    text-decoration: none;
+    color: var(--mer-sombre);
+    transition:
+      transform 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .intention:hover {
+    background: var(--mer-clair);
+    transform: translateX(4px);
+  }
+
+  .intention span {
+    font-size: 0.9rem;
+    color: var(--encre-doux);
+  }
+
+  .coordonnees {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.25rem;
+    font-size: 1.05rem;
+  }
+
+  .coordonnees a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .formulaire {
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: #fff;
+    border-radius: var(--rayon-large);
+    box-shadow: var(--ombre-douce);
+  }
+
+  .champ {
+    display: grid;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+    max-width: none;
+  }
+
+  .champ label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .champ input,
+  .champ textarea {
+    font: inherit;
+    padding: 0.75rem 1rem;
+    min-height: 3rem;
+    border: 2px solid rgb(20 38 44 / 0.18);
+    border-radius: var(--rayon);
+    background: var(--sable);
+    color: var(--encre);
+  }
+
+  .champ textarea {
+    resize: vertical;
+  }
+
+  .champ input:focus-visible,
+  .champ textarea:focus-visible {
+    border-color: var(--mer);
+  }
+
+  .formulaire__mention {
+    margin: 1.25rem 0 0;
+    font-size: 0.85rem;
+    color: var(--encre-doux);
+  }
+</style>
