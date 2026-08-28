@@ -85,14 +85,21 @@ Ne pas revenir dessus sans raison explicite.
 - **Courriels pré-remplis par intention** plutôt qu'un champ vide : le visiteur
   choisit qui il est, le message s'écrit tout seul, il n'a plus qu'à envoyer.
 - **Une seule page** plus `/carte` et `/confidentialite`. Pas de menu à tiroirs.
+- **Zone desservie dessinée, pas capturée.** `CarteZone.astro` projette les
+  vraies coordonnées des villes en SVG : deux kilo-octets, aux couleurs du site,
+  et sans les conditions d'utilisation de Google Maps. Pour ajouter une ville,
+  il suffit de l'ajouter à `zonesDesservies` avec ses coordonnées.
+- **Licence ZIN affichée en texte, sans logo.** Numéro de membre plus un lien
+  vers l'annuaire officiel. Pas de date de validité affichée : elle se renouvelle
+  chaque année et deviendrait fausse toute seule.
 
 ## Contraintes externes à respecter
 
 - **Jamais « zumba » dans le nom de domaine.** Les conditions des instructeurs
   licenciés Zumba Fitness l'interdisent. Le mot reste libre dans les textes de
   la page, où il est même attendu.
-- **Droit à l'image.** Les photos avec des résidents ou des enfants exigent une
-  autorisation écrite. Le cadrage retenu contourne le problème : Mariane nette
+- **Droit à l'image.** Mariane a confirmé que les médias qu'elle fournit sont
+  dégagés. Pour toute nouvelle prise de vue, garder le réflexe : Mariane nette
   au premier plan, participants de dos ou en flou de mouvement.
 - **Loi 25.** Le formulaire transite hors Québec, d'où la mention sous le
   formulaire et la page `/confidentialite`. Pas de bannière de témoins tant
@@ -105,10 +112,9 @@ Cherchez `MediaAbsent` et `TODO`.
 - **Photos et vidéos** : tous les emplacements sont réservés et légendés avec ce
   qu'on attend à chaque endroit.
 - **Témoignages** : la section disparaît du build tant qu'aucun n'a `publie: true`.
-- **Instagram** : `site.instagram.actif` est à `false` en attendant que Mariane
-  confirme.
-- **Nom de domaine** : `astro.config.mjs` pointe sur un domaine non réservé.
-  Ça n'affecte que le QR code, les URLs canoniques et le sitemap.
+- **Déploiement** : les secrets Cloudflare ne sont pas encore configurés, donc le
+  job de déploiement se saute tout seul. `marianedanse.ca` et `mariannedanse.ca`
+  sont réservés chez Rebel.ca et restent à brancher.
 
 ## Suivi
 
