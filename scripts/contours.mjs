@@ -17,12 +17,14 @@ const AGENT = "mariane-danse-site/1.0 (nicolascarlo.espeon@gmail.com)";
 // contour au tracé, qui fond les terres voisines en une seule masse.
 const TERRITOIRES = [
   { nom: "Deux-Montagnes", requete: "Deux-Montagnes (MRC), Québec, Canada" },
+  { nom: "Mirabel", requete: "Mirabel, Laurentides, Québec, Canada" },
   { nom: "Thérèse-De Blainville", requete: "Thérèse-De Blainville, Québec" },
   { nom: "Les Moulins", requete: "Les Moulins, Québec, Canada" },
   { nom: "L'Assomption", requete: "L'Assomption (MRC), Québec, Canada" },
   { nom: "Vaudreuil-Soulanges", requete: "Vaudreuil-Soulanges, Québec" },
-  { nom: "Roussillon", requete: "Roussillon (MRC), Québec, Canada" },
+  { nom: "Roussillon", requete: "Roussillon, Montérégie, Québec, Canada" },
   { nom: "Longueuil", requete: "Agglomération de Longueuil" },
+  { nom: "Marguerite-D'Youville", requete: "Marguerite-D'Youville, Québec" },
   { nom: "Laval", requete: "Île Jésus, Laval", ile: true },
   { nom: "Montréal", requete: "Île de Montréal", ile: true },
   { nom: "Île Bizard", requete: "Île Bizard", ile: true },
@@ -50,19 +52,33 @@ const LARGEUR = 800;
 // grossier : c'est le détail des côtes qui rendait la carte bruyante.
 const TOLERANCE_DEGRES = 0.0012;
 
-const cherche = async (requete) => {
+const EST_UNE_SURFACE = new Set(["Polygon", "MultiPolygon"]);
+
+const cherche = async (requete, classesAcceptees) => {
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("q", requete);
   url.searchParams.set("format", "json");
   url.searchParams.set("polygon_geojson", "1");
-  url.searchParams.set("limit", "1");
+  url.searchParams.set("limit", "5");
 
   const reponse = await fetch(url, { headers: { "User-Agent": AGENT } });
   if (!reponse.ok) throw new Error(`${requete} : HTTP ${reponse.status}`);
 
-  const [resultat] = await reponse.json();
-  if (!resultat?.geojson) throw new Error(`${requete} : aucun contour`);
-  return resultat.geojson;
+  const resultats = await reponse.json();
+  const retenu = resultats.find(
+    (resultat) =>
+      classesAcceptees.has(resultat.class) &&
+      EST_UNE_SURFACE.has(resultat.geojson?.type),
+  );
+
+  if (!retenu) {
+    const vus = resultats
+      .map((resultat) => `${resultat.class}=${resultat.type}`)
+      .join(", ");
+    throw new Error(`${requete} : aucune surface exploitable (vu : ${vus})`);
+  }
+
+  return retenu.geojson;
 };
 
 // On ne garde que les anneaux extérieurs : les trous (lacs, enclaves) sont
@@ -112,7 +128,10 @@ const contours = await Promise.all(
   TERRITOIRES.map(async (territoire, rang) => {
     // Nominatim demande une requête par seconde, pas davantage.
     await new Promise((suite) => setTimeout(suite, rang * 1200));
-    const geojson = await cherche(territoire.requete);
+    const geojson = await cherche(
+      territoire.requete,
+      new Set(["boundary", "place"]),
+    );
     return {
       nom: territoire.nom,
       ile: territoire.ile === true,
@@ -128,7 +147,10 @@ const eaux = await Promise.all(
     await new Promise((suite) =>
       setTimeout(suite, (TERRITOIRES.length + rang) * 1200),
     );
-    const geojson = await cherche(plan.requete);
+    const geojson = await cherche(
+      plan.requete,
+      new Set(["natural", "water", "waterway"]),
+    );
     return {
       nom: plan.nom,
       // Un lac n'a aucun détail utile à cette échelle, et celui des Deux
@@ -139,6 +161,18 @@ const eaux = await Promise.all(
     };
   }),
 );
+
+const POINTS_MINIMUM = 8;
+
+for (const { nom, anneaux } of [...contours, ...eaux]) {
+  const points = anneaux.reduce((total, anneau) => total + anneau.length, 0);
+  if (points < POINTS_MINIMUM) {
+    throw new Error(
+      `${nom} : ${points} points après simplification, c'est un artefact — ` +
+        "vérifier ce que la requête ramène.",
+    );
+  }
+}
 
 const cadre = CADRE;
 const latitudeCentrale = (cadre.latitudeMin + cadre.latitudeMax) / 2;

@@ -25,12 +25,18 @@ const projette = ({
 
 // Les étiquettes sont en HTML par-dessus le SVG : à l'intérieur, elles
 // rétréciraient avec la carte jusqu'à devenir illisibles sur téléphone.
+// Deux noms tiennent même sur un écran de 320 px, et ce sont eux qui situent
+// tout le reste : sans « Montréal » sous l'île, la forme ne dit rien à qui ne
+// connaît pas la région.
+const REPERES = new Set(["Laval", "Montréal"]);
+
 const villes = zonesDesservies.map((ville) => {
   const { x, y } = projette(ville);
   return {
     nom: ville.nom,
     x,
     y,
+    estUnRepere: REPERES.has(ville.nom),
     gauche: (x / largeur) * 100,
     haut: (y / hauteur) * 100,
   };
@@ -75,7 +81,7 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     {
       villes.map((ville) => (
         <span
-          class="zone__nom"
+          class:list={["zone__nom", { "zone__nom--repere": ville.estUnRepere }]}
           style={`left: ${ville.gauche}%; top: ${ville.haut}%`}
           aria-hidden="true"
         >
@@ -156,21 +162,29 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     display: none;
   }
 
+  .zone__nom,
+  .zone__nom--repere {
+    position: absolute;
+    /* Sous le point, centrée : pas de décision gauche/droite à prendre, et
+       aucune étiquette ne recouvre son propre repère. */
+    transform: translate(-50%, 0.5rem);
+    font-size: clamp(0.85rem, 2.3cqw, 1rem);
+    font-weight: 700;
+    color: var(--encre);
+    white-space: nowrap;
+    text-shadow:
+      0 0 4px var(--sable),
+      0 0 8px var(--sable),
+      0 0 12px var(--sable);
+  }
+
+  .zone__nom--repere {
+    display: block;
+  }
+
   @container (min-width: 27rem) {
     .zone__nom {
-      position: absolute;
       display: block;
-      /* Sous le point, centrée : pas de décision gauche/droite à prendre, et
-         aucune étiquette ne recouvre son propre repère. */
-      transform: translate(-50%, 0.5rem);
-      font-size: clamp(0.85rem, 2.3cqw, 1rem);
-      font-weight: 700;
-      color: var(--encre);
-      white-space: nowrap;
-      text-shadow:
-        0 0 4px var(--sable),
-        0 0 8px var(--sable),
-        0 0 12px var(--sable);
     }
   }
 

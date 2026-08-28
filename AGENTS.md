@@ -178,7 +178,7 @@ Ne pas revenir dessus sans raison explicite.
   d'utilisation de Google Maps. Pour ajouter une ville, il suffit de l'ajouter
   à `zonesDesservies` ; pour changer un territoire, on modifie `TERRITOIRES`
   dans le script et on le relance.
-  Quatre pièges déjà payés :
+  Cinq pièges déjà payés :
   1. Les frontières **administratives** englobent l'eau : les rivières
      disparaissent et les îles ne se lisent plus. D'où `place=island` pour
      Montréal, Laval et l'île Bizard, et une couche d'eau pour les lacs.
@@ -190,7 +190,12 @@ Ne pas revenir dessus sans raison explicite.
      couleur de la terre : les premières s'érodent, ce qui élargit la rivière
      des Prairies — un cheveu à cette échelle, mais c'est elle qui fait lire
      l'île de Montréal. Les secondes se soudent entre elles.
-  4. Les noms sont en **HTML par-dessus** le SVG, et n'apparaissent qu'au-delà
+  4. Une requête Nominatim mal cadrée ramène autre chose que le territoire —
+     « Roussillon (MRC) » rendait le **bâtiment** de la MRC, rue Saint-Pierre,
+     et le trou d'eau qui en résultait est passé inaperçu. Le script filtre
+     désormais sur `class=boundary` et refuse tout contour réduit à moins de
+     huit points.
+  5. Les noms sont en **HTML par-dessus** le SVG, et n'apparaissent qu'au-delà
      de 27 rem de large (requête de conteneur, pas de média : la carte occupe
      toute la largeur sur téléphone et moins de la moitié sur grand écran).
      Six noms sur 275 px se marchent dessus ; en dessous, la légende prend le
