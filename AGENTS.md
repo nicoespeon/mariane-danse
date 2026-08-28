@@ -162,6 +162,20 @@ Ne pas revenir dessus sans raison explicite.
   « Envoyer » qui n'envoie rien est pire que pas de bouton. La page
   `/confidentialite` suit la même bascule, pour ne pas décrire un relais
   absent. Les courriels par intention, eux, restent là dans tous les cas.
+
+  **La redirection de fin d'envoi ne marche pas en local, et c'est normal.**
+  Sans le champ caché `redirect`, Web3Forms affiche sa propre confirmation,
+  en anglais, sur un site qui n'a pas de version anglaise — d'où `/merci`.
+  Mais sur le plan gratuit, ils n'acceptent que le même domaine : « Cross
+  domain redirection requires a paid plan ». Depuis `localhost`, la
+  redirection vers `marianedanse.ca` est donc refusée en silence et on
+  retombe sur leur page. Ne pas chercher de bug : il faut un déploiement.
+  Même règle pour les préversions, d'où `CF_PAGES_URL`. Attention, Cloudflare
+  la définit pour **tous** les déploiements, production comprise : s'en servir
+  sans regarder `CF_PAGES_BRANCH` enverrait la production vers son adresse
+  `.pages.dev` alors que le visiteur est sur le domaine — donc vers un autre
+  domaine, donc nulle part.
+
 - **Courriels pré-remplis par intention** plutôt qu'un champ vide : le visiteur
   choisit qui il est, le message s'écrit tout seul, il n'a plus qu'à envoyer.
 - **Une seule page** plus `/carte` et `/confidentialite`. Pas de menu à tiroirs.
