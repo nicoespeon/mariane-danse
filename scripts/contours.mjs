@@ -30,8 +30,14 @@ const TERRITOIRES = [
   { nom: "Île Bizard", requete: "Île Bizard", ile: true },
 ];
 
+// Le fleuve n'a pas de relation nommée : dans OpenStreetMap, le Saint-Laurent
+// autour de Montréal est un assemblage de surfaces `water=river` anonymes.
+// Nominatim ne les indexe donc pas, et on passe par Overpass.
+const CADRE_DES_EAUX = "45.35,-74.10,45.80,-73.35";
+
 // Les limites de MRC englobent les plans d'eau : sans cette couche, le lac
-// des Deux Montagnes et le lac Saint-Louis passent pour de la terre ferme.
+// des Deux Montagnes et le lac Saint-Louis passent pour de la terre ferme,
+// et le fleuve disparaît entre l'île de Montréal et la Rive-Sud.
 const EAUX = [
   { nom: "Lac des Deux Montagnes", requete: "Lac des Deux Montagnes, Québec" },
   { nom: "Lac Saint-Louis", requete: "Lac Saint-Louis, Québec" },
@@ -44,6 +50,84 @@ const CADRE = {
   longitudeMax: -73.42,
   latitudeMin: 45.38,
   latitudeMax: 45.72,
+};
+
+const overpass = async (requete) => {
+  const reponse = await fetch("https://overpass-api.de/api/interpreter", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": AGENT,
+    },
+    body: `data=${encodeURIComponent(requete)}`,
+  });
+  if (!reponse.ok) throw new Error(`Overpass : HTTP ${reponse.status}`);
+  return (await reponse.json()).elements;
+};
+
+const memePoint = ([x1, y1], [x2, y2]) => x1 === x2 && y1 === y2;
+
+// Une relation multipolygone d'OpenStreetMap arrive en morceaux de tracé, dans
+// le désordre et parfois à l'envers. On les recolle bout à bout.
+const assembleAnneaux = (membres) => {
+  const morceaux = membres
+    .filter((membre) => membre.role === "outer" && membre.geometry)
+    .map((membre) => membre.geometry.map((point) => [point.lon, point.lat]));
+
+  const anneaux = [];
+  let anneau = morceaux.shift();
+
+  while (anneau) {
+    const depart = anneau[0];
+    const arrivee = anneau.at(-1);
+
+    if (memePoint(depart, arrivee)) {
+      anneaux.push(anneau);
+      anneau = morceaux.shift();
+      continue;
+    }
+
+    const suivant = morceaux.findIndex(
+      (morceau) =>
+        memePoint(morceau[0], arrivee) || memePoint(morceau.at(-1), arrivee),
+    );
+
+    if (suivant === -1) {
+      // Rien ne se raccorde : on ferme et on passe au suivant.
+      anneaux.push([...anneau, depart]);
+      anneau = morceaux.shift();
+      continue;
+    }
+
+    const [morceau] = morceaux.splice(suivant, 1);
+    anneau = memePoint(morceau[0], arrivee)
+      ? [...anneau, ...morceau.slice(1)]
+      : [...anneau, ...morceau.reverse().slice(1)];
+  }
+
+  return anneaux;
+};
+
+const surfacesDEau = async () => {
+  // Deux temps : la boîte englobante donne les identifiants, puis on
+  // redemande les relations entières. Sans ça, Overpass rogne la géométrie
+  // au bord du cadre et les anneaux ne se referment plus.
+  const trouvees = await overpass(
+    `[out:json][timeout:180];rel["water"="river"](${CADRE_DES_EAUX});out ids;`,
+  );
+  const identifiants = trouvees.map((element) => element.id);
+  if (identifiants.length === 0) throw new Error("Aucune surface d'eau");
+
+  const relations = await overpass(
+    `[out:json][timeout:300];rel(id:${identifiants.join(",")});out geom;`,
+  );
+
+  return relations.map((relation) => ({
+    nom: relation.tags?.name ?? `Cours d'eau ${relation.id}`,
+    anneaux: assembleAnneaux(relation.members ?? []).map((anneau) =>
+      simplifie(anneau, TOLERANCE_DEGRES),
+    ),
+  }));
 };
 
 const LARGEUR = 800;
@@ -156,11 +240,16 @@ const eaux = await Promise.all(
       // Un lac n'a aucun détail utile à cette échelle, et celui des Deux
       // Montagnes arrive avec vingt mille points.
       anneaux: anneauxExterieurs(geojson).map((anneau) =>
-        simplifie(anneau, TOLERANCE_DEGRES * 3),
+        simplifie(anneau, TOLERANCE_DEGRES),
       ),
     };
   }),
 );
+
+const cours = (await surfacesDEau()).filter(
+  ({ anneaux }) => anneaux.reduce((n, a) => n + a.length, 0) >= 8,
+);
+eaux.push(...cours);
 
 const POINTS_MINIMUM = 8;
 
@@ -191,8 +280,25 @@ const projette = ([longitude, latitude]) => [
 
 const arrondi = (valeur) => Math.round(valeur * 10) / 10;
 
+// Beaucoup de ruisseaux ramenés par la requête tombent entièrement hors du
+// cadre : les garder, c'est alourdir la page pour des traits invisibles.
+const DEBORDEMENT = 40;
+
+const toucheLeCadre = (anneau) => {
+  const points = anneau.map(projette);
+  const xs = points.map(([x]) => x);
+  const ys = points.map(([, y]) => y);
+  return (
+    Math.max(...xs) > -DEBORDEMENT &&
+    Math.min(...xs) < LARGEUR + DEBORDEMENT &&
+    Math.max(...ys) > -DEBORDEMENT &&
+    Math.min(...ys) < hauteur + DEBORDEMENT
+  );
+};
+
 const versTrace = (anneaux) =>
   anneaux
+    .filter(toucheLeCadre)
     .map((anneau) =>
       anneau
         .map(projette)
@@ -230,6 +336,7 @@ ${contours
   // sans eux les lacs passent pour de la terre ferme.
   eaux: [
 ${eaux
+  .filter(({ anneaux }) => anneaux.some(toucheLeCadre))
   .map(
     ({ nom, anneaux }) =>
       `    {\n      nom: ${JSON.stringify(nom)},\n      trace:\n        ${JSON.stringify(versTrace(anneaux))},\n    },`,

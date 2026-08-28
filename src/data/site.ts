@@ -48,10 +48,7 @@ export const autresVillesDesservies = [
   "Rosemère",
   "Lorraine",
   "Bois-des-Filion",
-  "Sainte-Anne-des-Plaines",
   "Deux-Montagnes",
   "Sainte-Marthe-sur-le-Lac",
   "Terrebonne",
-  "Mascouche",
-  "Repentigny",
 ] as const;

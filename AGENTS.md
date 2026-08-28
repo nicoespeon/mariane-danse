@@ -181,7 +181,12 @@ Ne pas revenir dessus sans raison explicite.
   Cinq pièges déjà payés :
   1. Les frontières **administratives** englobent l'eau : les rivières
      disparaissent et les îles ne se lisent plus. D'où `place=island` pour
-     Montréal, Laval et l'île Bizard, et une couche d'eau pour les lacs.
+     Montréal, Laval et l'île Bizard, et une couche d'eau par-dessus les
+     rives. Le fleuve n'a pas de relation nommée — autour de Montréal, c'est
+     un assemblage de surfaces `water=river` anonymes que Nominatim n'indexe
+     pas. Le script passe par Overpass et recolle les anneaux lui-même.
+     Simplifier les lacs plus grossièrement que les terres ne marche pas
+     non plus : la rive sud du lac Saint-Louis avalait Châteauguay.
   2. **Aucun contour** sur les terres. Le trait foncé faisait tout le bruit, et
      il dessinait des limites de MRC que personne ne voit sur le terrain. Sans
      lui, les rives voisines fondent en une seule masse et le cadre fixe rejette

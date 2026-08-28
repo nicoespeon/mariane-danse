@@ -37,6 +37,21 @@ const fautes = [
   },
 ];
 
+// Ces deux-là se lisent sur le HTML brut, pas sur le texte : une fois les
+// balises retirées, « à<a>courriel » et « à courriel » se ressemblent trop.
+// Même cause que les fautes ci-dessus — Astro mange l'espace devant un
+// élément — mais sans ponctuation pour la trahir.
+const collisionsDeBalises = [
+  {
+    motif: /\p{L}<a\b[^>]*>\p{L}/gu,
+    explique: () => 'mot collé au lien qui suit (mettre un {" "} avant)',
+  },
+  {
+    motif: /<\/a>\p{L}/gu,
+    explique: () => 'lien collé au mot qui suit (mettre un {" "} après)',
+  },
+];
+
 const fichiersHtml = async (dossier) => {
   const entrees = await readdir(dossier, { withFileTypes: true });
   const chemins = await Promise.all(
@@ -79,18 +94,37 @@ const decode = (texte) =>
 const EN_LIGNE =
   /^<\/?(a|abbr|b|code|em|i|mark|s|small|span|strong|sub|sup|time|u)\b/iu;
 
+const sansCodeEmbarque = (html) =>
+  html.replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gu, " ");
+
 const texteVisible = (html) =>
   decode(
-    html
-      .replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gu, " ")
-      .replace(/<[^>]+>/gu, (balise) => (EN_LIGNE.test(balise) ? "" : " ")),
+    sansCodeEmbarque(html).replace(/<[^>]+>/gu, (balise) =>
+      EN_LIGNE.test(balise) ? "" : " ",
+    ),
   );
 
 const dist = new URL("../dist/", import.meta.url).pathname;
 const releves = [];
 
+const contexte = (source, index) =>
+  source
+    .slice(Math.max(0, index - 40), index + 25)
+    .replace(/\s+/gu, " ")
+    .trim();
+
 for (const fichier of await fichiersHtml(dist)) {
-  const texte = texteVisible(await readFile(fichier, "utf8"));
+  const html = await readFile(fichier, "utf8");
+  const balisage = sansCodeEmbarque(html);
+  const texte = texteVisible(html);
+
+  for (const { motif, explique } of collisionsDeBalises) {
+    for (const trouvaille of balisage.matchAll(motif)) {
+      releves.push(
+        `${fichier.replace(dist, "")} — ${explique()}\n    …${contexte(balisage, trouvaille.index)}…`,
+      );
+    }
+  }
 
   for (const { motif, explique } of fautes) {
     for (const trouvaille of texte.matchAll(motif)) {
