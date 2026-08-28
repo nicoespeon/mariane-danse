@@ -1,130 +1,151 @@
 ---
-import { baseDeDeplacement, zonesDesservies } from "../data/site";
+import { carteRegion } from "../data/contours";
+import { zonesDesservies } from "../data/site";
 
-// Plutôt qu'une capture de Google Maps (lourde, et dont les conditions
-// d'utilisation interdisent la rediffusion), on projette les vraies
-// coordonnées : c'est exact, ça pèse deux kilo-octets et c'est aux couleurs
-// du site.
-const KM_PAR_DEGRE_LATITUDE = 110.57;
-const KM_PAR_DEGRE_LONGITUDE = 111.32;
+// Les contours viennent d'OpenStreetMap, figés par scripts/contours.mjs : on
+// reconnaît l'île de Montréal et l'île Jésus au premier coup d'œil, sans
+// dépendre d'une capture de Google Maps ni de ses conditions d'utilisation.
+const { largeur, hauteur, projection, territoires } = carteRegion;
 
-const versKilometres = ({
-  latitude,
-  longitude,
-}: {
-  latitude: number;
-  longitude: number;
-}) => ({
-  est:
-    (longitude - baseDeDeplacement.longitude) *
-    Math.cos((baseDeDeplacement.latitude * Math.PI) / 180) *
-    KM_PAR_DEGRE_LONGITUDE,
-  nord: (latitude - baseDeDeplacement.latitude) * KM_PAR_DEGRE_LATITUDE,
+type Lieu = { latitude: number; longitude: number };
+
+const projette = ({ latitude, longitude }: Lieu) => ({
+  x:
+    projection.marge +
+    (longitude - projection.longitudeMin) *
+      projection.aplatissement *
+      projection.echelle,
+  y:
+    projection.marge + (projection.latitudeMax - latitude) * projection.echelle,
 });
 
-const RAYON_DESSIN = 130;
-const echelle = RAYON_DESSIN / baseDeDeplacement.rayonKm;
+// En pourcentage, pour poser les étiquettes en HTML par-dessus le SVG : du
+// texte dans un SVG rétrécit avec lui et devient vite illisible.
+const enPourcentage = (lieu: Lieu) => {
+  const { x, y } = projette(lieu);
+  return { gauche: (x / largeur) * 100, haut: (y / hauteur) * 100 };
+};
 
-const villes = zonesDesservies.map((ville) => {
-  const { est, nord } = versKilometres(ville);
-  return {
-    nom: ville.nom,
-    x: est * echelle,
-    // L'axe des y d'un SVG descend, celui du nord monte
-    y: -nord * echelle,
-    estLaBase: ville.nom === baseDeDeplacement.nom,
-  };
-});
+// Posées à la main sur une zone dégagée de chaque territoire : un centroïde
+// de forme concave tombe régulièrement dans l'eau.
+const etiquettes = [
+  { nom: "Rive-Nord", latitude: 45.757, longitude: -73.855 },
+  { nom: "Laval", latitude: 45.598, longitude: -73.742 },
+  { nom: "Montréal", latitude: 45.487, longitude: -73.68 },
+].map((etiquette) => ({ ...etiquette, ...enPourcentage(etiquette) }));
+
+const villes = zonesDesservies.map((ville) => ({
+  nom: ville.nom,
+  ...projette(ville),
+}));
+
+const nomsDeVilles = villes.map((ville) => ville.nom);
 ---
 
 <figure class="zone">
-  {/* La boîte est plus large que le cercle : les noms de villes débordent */}
-  <svg viewBox="-205 -165 410 330" role="img" aria-labelledby="zone-titre">
-    <title id="zone-titre">
-      Carte simplifiée des villes desservies autour de {baseDeDeplacement.nom},
-      dans un rayon d'environ {baseDeDeplacement.minutesDeRoute} minutes de route
-    </title>
+  <div class="zone__cadre">
+    <svg
+      viewBox={`0 0 ${largeur} ${hauteur}`}
+      role="img"
+      aria-labelledby="zone-titre zone-detail"
+    >
+      <title id="zone-titre">Carte des territoires où Mariane se déplace</title>
+      <desc id="zone-detail">
+        Laval, l'île de Montréal et la Rive-Nord sont mises en évidence. Les
+        villes marquées d'un point sont {nomsDeVilles.join(", ")}.
+      </desc>
 
-    <circle class="zone__halo" r={RAYON_DESSIN}></circle>
-    <circle class="zone__anneau" r={RAYON_DESSIN}></circle>
-    <circle class="zone__anneau zone__anneau--interieur" r={RAYON_DESSIN / 2}
-    ></circle>
+      <rect class="zone__eau" width={largeur} height={hauteur}></rect>
+
+      {
+        territoires.map((territoire) => (
+          <path
+            class:list={[
+              "zone__terre",
+              { "zone__terre--desservie": territoire.desservi },
+            ]}
+            d={territoire.trace}
+          />
+        ))
+      }
+
+      {
+        villes.map((ville) => (
+          <circle class="zone__point" cx={ville.x} cy={ville.y} r="8" />
+        ))
+      }
+    </svg>
 
     {
-      villes.map((ville) => (
-        <g transform={`translate(${ville.x} ${ville.y})`}>
-          <circle
-            class:list={[
-              "zone__point",
-              { "zone__point--base": ville.estLaBase },
-            ]}
-            r={ville.estLaBase ? 7 : 4.5}
-          />
-          <text
-            class="zone__nom"
-            x={ville.x < 0 ? -10 : 10}
-            y="4"
-            text-anchor={ville.x < 0 ? "end" : "start"}
-          >
-            {ville.nom}
-          </text>
-        </g>
+      etiquettes.map((etiquette) => (
+        <span
+          class="zone__territoire"
+          style={`left: ${etiquette.gauche}%; top: ${etiquette.haut}%`}
+          aria-hidden="true"
+        >
+          {etiquette.nom}
+        </span>
       ))
     }
-  </svg>
+  </div>
 
-  <figcaption>Laval, Montréal et la Rive-Nord.</figcaption>
+  <figcaption>
+    Villes desservies&nbsp;: {nomsDeVilles.join(", ")}. Fonds de carte{" "}
+    <a href="https://www.openstreetmap.org/copyright" rel="noopener">
+      © les contributeurs d'OpenStreetMap
+    </a>.
+  </figcaption>
 </figure>
 
 <style>
   .zone {
     margin: 0;
     display: grid;
-    justify-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
+  }
+
+  .zone__cadre {
+    position: relative;
   }
 
   .zone svg {
-    width: min(30rem, 100%);
+    width: 100%;
     height: auto;
+    border-radius: var(--rayon);
   }
 
-  .zone__halo {
+  .zone__eau {
     fill: var(--mer-brume);
   }
 
-  .zone__anneau {
-    fill: none;
-    stroke: var(--mer-clair);
-    stroke-width: 2;
-  }
-
-  .zone__anneau--interieur {
-    stroke-dasharray: 5 7;
-    opacity: 0.7;
+  .zone__terre {
+    fill: var(--sable);
+    stroke: var(--mer);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
   }
 
   .zone__point {
-    fill: var(--mer);
-  }
-
-  .zone__point--base {
     fill: var(--soleil-vif);
     stroke: var(--sable);
-    stroke-width: 2.5;
+    stroke-width: 3;
   }
 
-  .zone__nom {
-    font-family: var(--police-texte);
-    font-size: 13px;
-    font-weight: 600;
-    fill: var(--encre);
+  .zone__territoire {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--mer-sombre);
+    white-space: nowrap;
+    /* Le halo garde le nom lisible même s'il passe sur une côte */
+    text-shadow:
+      0 0 4px var(--sable),
+      0 0 8px var(--sable);
   }
 
   .zone figcaption {
-    max-width: 34ch;
-    text-align: center;
     color: var(--encre-doux);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 </style>

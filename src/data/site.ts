@@ -22,16 +22,6 @@ export const licence = {
   intitules: ["Zumba®", "Zumba Gold®"],
 } as const;
 
-// Point de départ des déplacements, et rayon de route accepté.
-export const baseDeDeplacement = {
-  nom: "Laval",
-  latitude: 45.606,
-  longitude: -73.712,
-  minutesDeRoute: 25,
-  // 25 minutes de route en banlieue montréalaise : environ 25 km
-  rayonKm: 25,
-} as const;
-
 export const zonesDesservies = [
   { nom: "Laval", latitude: 45.606, longitude: -73.712 },
   { nom: "Sainte-Thérèse", latitude: 45.64, longitude: -73.851 },

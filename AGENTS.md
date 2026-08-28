@@ -119,10 +119,22 @@ Ne pas revenir dessus sans raison explicite.
 - **Courriels pré-remplis par intention** plutôt qu'un champ vide : le visiteur
   choisit qui il est, le message s'écrit tout seul, il n'a plus qu'à envoyer.
 - **Une seule page** plus `/carte` et `/confidentialite`. Pas de menu à tiroirs.
-- **Zone desservie dessinée, pas capturée.** `CarteZone.astro` projette les
-  vraies coordonnées des villes en SVG : deux kilo-octets, aux couleurs du site,
-  et sans les conditions d'utilisation de Google Maps. Pour ajouter une ville,
-  il suffit de l'ajouter à `zonesDesservies` avec ses coordonnées.
+- **Zone desservie dessinée, pas capturée.** `CarteZone.astro` trace les vrais
+  contours de l'île de Montréal, de l'île Jésus et de la Rive-Nord. Ils viennent
+  d'OpenStreetMap via `scripts/contours.mjs`, et sont figés dans
+  `src/data/contours.ts` : le build reste hors ligne, la carte pèse dix
+  kilo-octets, elle est aux couleurs du site et échappe aux conditions
+  d'utilisation de Google Maps. Pour ajouter une ville, il suffit de l'ajouter
+  à `zonesDesservies` ; pour changer un territoire, on modifie `TERRITOIRES`
+  dans le script et on le relance.
+  Deux pièges déjà payés : les frontières **administratives** englobent l'eau,
+  donc les rivières disparaissent et les îles ne se lisent plus — d'où
+  `place=island` pour Montréal et Laval. Et le nom des territoires est posé en
+  **HTML par-dessus** le SVG : à l'intérieur, il rétrécit avec la carte et
+  devient illisible sur téléphone.
+- **Pas de rayon de déplacement.** Il partait du domicile de Mariane, une
+  information privée, et « 25 minutes autour de Laval » ne voulait rien dire —
+  l'autre bout de Laval est déjà à 25 minutes. On nomme les territoires.
 - **Licence ZIN affichée en texte, sans logo.** Numéro de membre plus un lien
   vers l'annuaire officiel. Pas de date de validité affichée : elle se renouvelle
   chaque année et deviendrait fausse toute seule.
@@ -135,6 +147,8 @@ Ne pas revenir dessus sans raison explicite.
 - **Droit à l'image.** Mariane a confirmé que les médias qu'elle fournit sont
   dégagés. Pour toute nouvelle prise de vue, garder le réflexe : Mariane nette
   au premier plan, participants de dos ou en flou de mouvement.
+- **Attribution OpenStreetMap.** Les contours sont sous ODbL : le crédit sous
+  la carte n'est pas décoratif, il est exigé par la licence.
 - **Loi 25.** Le formulaire transite hors Québec, d'où la mention sous le
   formulaire et la page `/confidentialite`. Pas de bannière de témoins tant
   qu'on n'ajoute aucun outil de mesure traçant.
