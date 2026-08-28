@@ -69,6 +69,11 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 // peut donc pas valider le formulaire avant de le mettre en ligne.
 const origine = process.env.CF_PAGES_URL ?? Astro.site;
 const pageDeRemerciement = new URL("/merci/", origine).href;
+
+// Dans une boîte de réception, « Nouveau message depuis le site » ne dit ni
+// de quel site ni de quoi il s'agit. Le domaine se lit depuis la config pour
+// qu'il ne puisse pas diverger.
+const objetDuCourriel = `Nouvelle demande via ${Astro.site?.host ?? "marianedanse.ca"}`;
 ---
 
 <section class="section" id="contact">
@@ -126,12 +131,10 @@ const pageDeRemerciement = new URL("/merci/", origine).href;
           data-form-type="other"
         >
           <input type="hidden" name="access_key" value={cleWeb3Forms} />
-          <input type="hidden" name="redirect" value={pageDeRemerciement} />
-          <input
-            type="hidden"
-            name="subject"
-            value="Nouveau message depuis le site"
-          />
+          <>
+            <input type="hidden" name="redirect" value={pageDeRemerciement} />
+            <input type="hidden" name="subject" value={objetDuCourriel} />
+          </>
           {/* Piège à robots : un humain ne remplit jamais ce champ */}
           <input
             type="checkbox"
