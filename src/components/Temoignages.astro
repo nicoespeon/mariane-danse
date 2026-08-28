@@ -66,11 +66,11 @@ const temoignages = await getCollection(
   }
 
   .temoignage blockquote p::before {
-    content: "« ";
+    content: "«\00a0";
   }
 
   .temoignage blockquote p::after {
-    content: " »";
+    content: "\00a0»";
   }
 
   .temoignage figcaption {

@@ -40,7 +40,28 @@ de la lisibilité.
 - **Rapide.** Pas de script tiers, pas de police chargée depuis un CDN.
 - **Mobile d'abord.** Mariane montre le site depuis son téléphone, en
   déplacement, souvent juste après un cours.
-- **Français du Québec.** Une seule langue, pas de version anglaise.
+- **Français du Québec.** Une seule langue, pas de version anglaise, et la
+  typographie d'ici — voir la section ci-dessous.
+
+## Français du Québec
+
+La typographie québécoise n'est pas la française, et c'est le piège classique :
+au Québec, **pas d'espace devant `?`, `!` et `;`**. L'espace insécable, elle,
+reste obligatoire devant `:` et `%`, et à l'intérieur des guillemets.
+
+| Écrire                                         | Pas                        |
+| ---------------------------------------------- | -------------------------- |
+| `Vous cherchez un cours?`                      | `un cours ?`               |
+| `Merci!`                                       | `Merci !`                  |
+| `Le plus rapide&nbsp;: choisir`                | `Le plus rapide : choisir` |
+| `«&nbsp;la mère qu'on voit danser&nbsp;»`      | `« la mère… »`             |
+| `45&nbsp;min`, `9&nbsp;h&nbsp;30`, `25&nbsp;$` | `45min`, `9h30`, `25$`     |
+
+Le tiret cadratin `—` garde ses espaces. Les majuscules gardent leurs accents
+(`À`, `É`). « Numéro » s'abrège `n` suivi d'un `o` en exposant, jamais `n°`.
+
+`pnpm check` fait échouer le build sur ces fautes : `scripts/typographie.mjs`
+relit le HTML produit — donc ce que le visiteur lit, quelle que soit la source.
 
 ## Structure
 
