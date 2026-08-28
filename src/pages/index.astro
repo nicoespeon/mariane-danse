@@ -9,7 +9,11 @@ import Galerie from "../components/Galerie.astro";
 import Temoignages from "../components/Temoignages.astro";
 import Contact from "../components/Contact.astro";
 import Pied from "../components/Pied.astro";
-import { site, zonesDesservies } from "../data/site";
+import {
+  site,
+  villesOuElleEnseigne,
+  autresVillesDesservies,
+} from "../data/site";
 import { getCollection } from "astro:content";
 
 const offres = (await getCollection("offres")).sort(
@@ -33,10 +37,10 @@ const donneesStructurees = {
   sameAs: site.instagram.actif
     ? [`https://instagram.com/${site.instagram.handle}`]
     : undefined,
-  areaServed: zonesDesservies.map((zone) => ({
-    "@type": "City",
-    name: zone.nom,
-  })),
+  areaServed: [
+    ...villesOuElleEnseigne.map((ville) => ville.nom),
+    ...autresVillesDesservies,
+  ].map((nom) => ({ "@type": "City", name: nom })),
   makesOffer: offres.map((offre) => ({
     "@type": "Offer",
     itemOffered: {

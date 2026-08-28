@@ -26,11 +26,32 @@ export const licence = {
   avis: { note: "5,0", nombre: 7 },
 } as const;
 
-export const zonesDesservies = [
+// Deux listes, deux promesses différentes. Celle-ci porte des coordonnées et
+// devient un point sur la carte : c'est une preuve, elle ne contient que des
+// villes où Mariane donne effectivement des cours.
+export const villesOuElleEnseigne = [
   { nom: "Laval", latitude: 45.606, longitude: -73.712 },
   { nom: "Sainte-Thérèse", latitude: 45.64, longitude: -73.851 },
   { nom: "Saint-Eustache", latitude: 45.565, longitude: -73.905 },
   { nom: "Anjou", latitude: 45.614, longitude: -73.554 },
   { nom: "Saint-Léonard", latitude: 45.588, longitude: -73.598 },
   { nom: "Montréal", latitude: 45.508, longitude: -73.561 },
+] as const;
+
+// Celle-là décrit le territoire qu'elle couvre — « Laval, Montréal et la
+// Rive-Nord », en nommant les villes que les gens d'ici reconnaissent. Pas de
+// coordonnées : elle ne pose aucun point sur la carte, elle nourrit le
+// référencement local et la phrase de la section « Où Mariane se déplace ».
+export const autresVillesDesservies = [
+  "Blainville",
+  "Boisbriand",
+  "Rosemère",
+  "Lorraine",
+  "Bois-des-Filion",
+  "Sainte-Anne-des-Plaines",
+  "Deux-Montagnes",
+  "Sainte-Marthe-sur-le-Lac",
+  "Terrebonne",
+  "Mascouche",
+  "Repentigny",
 ] as const;

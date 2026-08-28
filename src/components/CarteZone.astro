@@ -1,6 +1,6 @@
 ---
 import { carteRegion } from "../data/contours";
-import { zonesDesservies } from "../data/site";
+import { villesOuElleEnseigne } from "../data/site";
 
 // Contours OpenStreetMap figés par scripts/contours.mjs. Aucun trait sur les
 // terres : le contour foncé faisait tout le bruit de la carte, et il dessinait
@@ -30,7 +30,7 @@ const projette = ({
 // connaît pas la région.
 const REPERES = new Set(["Laval", "Montréal"]);
 
-const villes = zonesDesservies.map((ville) => {
+const villes = villesOuElleEnseigne.map((ville) => {
   const { x, y } = projette(ville);
   return {
     nom: ville.nom,

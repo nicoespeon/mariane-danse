@@ -1,5 +1,6 @@
 ---
 import CarteZone from "./CarteZone.astro";
+import { autresVillesDesservies } from "../data/site";
 
 // Sert autant au visiteur qu'au référencement local : c'est la page qui doit
 // sortir sur « zumba aînés résidence laval ».
@@ -35,6 +36,11 @@ const milieux = [
         }
       </ul>
     </div>
+
+    <p class="autres-villes">
+      Elle se déplace aussi à {autresVillesDesservies.slice(0, -1).join(", ")} et
+      {" "}{autresVillesDesservies.at(-1)}.
+    </p>
   </div>
 </section>
 
@@ -72,6 +78,14 @@ const milieux = [
 
   .milieu span {
     font-size: 0.9rem;
+    color: var(--encre-doux);
+  }
+
+  /* Les villes que les gens d'ici reconnaissent, en toutes lettres : c'est
+     sur ces noms-là qu'un coordonnateur cherche. */
+  .autres-villes {
+    margin: 2.5rem 0 0;
+    max-width: none;
     color: var(--encre-doux);
   }
 </style>

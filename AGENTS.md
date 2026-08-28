@@ -200,6 +200,13 @@ Ne pas revenir dessus sans raison explicite.
      toute la largeur sur téléphone et moins de la moitié sur grand écran).
      Six noms sur 275 px se marchent dessus ; en dessous, la légende prend le
      relais.
+- **Deux listes de villes, deux promesses.** `villesOuElleEnseigne` porte des
+  coordonnées et devient un point sur la carte : c'est une preuve, on n'y met
+  que des villes où Mariane donne effectivement des cours.
+  `autresVillesDesservies` décrit le territoire qu'elle couvre, sans
+  coordonnées — elle ne pose aucun point, elle alimente le `areaServed` du
+  JSON-LD et la phrase en bas de la section « Où ». Ne pas les fusionner :
+  chaque ville ajoutée à la première affirme qu'elle y enseigne.
 - **Pas de rayon de déplacement.** Il partait du domicile de Mariane, une
   information privée, et « 25 minutes autour de Laval » ne voulait rien dire —
   l'autre bout de Laval est déjà à 25 minutes. On nomme les territoires.
