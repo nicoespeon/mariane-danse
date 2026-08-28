@@ -17,6 +17,18 @@ const annee = new Date().getFullYear();
         <li><a href="/carte/">Ma carte à montrer</a></li>
         <li><a href="/confidentialite/">Confidentialité</a></li>
         <li><a href={`mailto:${site.courriel}`}>{site.courriel}</a></li>
+        {
+          site.instagram.actif && (
+            <li>
+              <a
+                href={`https://instagram.com/${site.instagram.handle}`}
+                rel="me noopener"
+              >
+                Instagram
+              </a>
+            </li>
+          )
+        }
       </ul>
     </nav>
 
