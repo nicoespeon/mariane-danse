@@ -21,8 +21,17 @@ const temoignages = defineCollection({
   schema: z.object({
     citation: z.string(),
     auteur: z.string(),
-    fonction: z.string(),
-    organisme: z.string(),
+    // Un organisme se présente par une fonction, un avis ZIN par le lien qui
+    // permet de le vérifier. Ni l'un ni l'autre ne peut emprunter les champs
+    // de son voisin.
+    source: z.discriminatedUnion("type", [
+      z.object({
+        type: z.literal("organisme"),
+        fonction: z.string(),
+        organisme: z.string(),
+      }),
+      z.object({ type: z.literal("avis-zin") }),
+    ]),
     // Tant que le témoignage n'est pas confirmé, il ne sort pas du build
     publie: z.boolean().default(false),
   }),

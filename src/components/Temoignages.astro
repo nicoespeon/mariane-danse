@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { licence } from "../data/site";
 
 // Tant qu'aucun témoignage n'est confirmé, la section disparaît du build
 // plutôt que d'afficher du faux.
@@ -13,7 +14,7 @@ const temoignages = await getCollection(
   temoignages.length > 0 && (
     <section class="section section--creuse" id="temoignages">
       <div class="enveloppe">
-        <h2>Ce qu'en disent les organismes</h2>
+        <h2>Ce qu'on dit de ses cours</h2>
         <ul class="temoignages">
           {temoignages.map((temoignage) => (
             <li>
@@ -23,9 +24,18 @@ const temoignages = await getCollection(
                 </blockquote>
                 <figcaption>
                   <strong>{temoignage.data.auteur}</strong>
-                  <span>
-                    {temoignage.data.fonction}, {temoignage.data.organisme}
-                  </span>
+                  {temoignage.data.source.type === "organisme" ? (
+                    <span>
+                      {temoignage.data.source.fonction},{" "}
+                      {temoignage.data.source.organisme}
+                    </span>
+                  ) : (
+                    <span>
+                      <a href={licence.profil} rel="noopener">
+                        Avis publié sur sa fiche ZIN
+                      </a>
+                    </span>
+                  )}
                 </figcaption>
               </figure>
             </li>
@@ -44,6 +54,12 @@ const temoignages = await getCollection(
     display: grid;
     gap: 1.5rem;
     grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  }
+
+  /* Sans ça, la figure garde sa hauteur naturelle et les cartes s'arrêtent
+     toutes à une hauteur différente. */
+  .temoignages li {
+    display: grid;
   }
 
   .temoignage {
