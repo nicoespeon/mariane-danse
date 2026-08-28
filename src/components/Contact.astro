@@ -226,6 +226,7 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
+    overflow-wrap: anywhere;
   }
 
   .coordonnees__instagram {
@@ -254,6 +255,10 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
   .champ input,
   .champ textarea {
     font: inherit;
+    /* Un <input> réclame la largeur de vingt caractères tant qu'on ne le lui
+       interdit pas — et c'est la colonne entière qui s'élargit avec lui. */
+    width: 100%;
+    min-width: 0;
     padding: 0.75rem 1rem;
     min-height: 3rem;
     border: 2px solid rgb(20 38 44 / 0.18);

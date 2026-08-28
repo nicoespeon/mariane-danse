@@ -64,7 +64,7 @@ const emplacements = [
     margin-top: 2.5rem;
     display: grid;
     gap: 1.25rem;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
   }
 
   .instagram {
@@ -92,6 +92,8 @@ const emplacements = [
 
   .instagram__texte {
     display: grid;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .instagram__texte span {

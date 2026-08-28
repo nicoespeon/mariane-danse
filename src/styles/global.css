@@ -69,11 +69,15 @@ h3 {
   line-height: 1.1;
   letter-spacing: -0.015em;
   text-wrap: balance;
+  /* Filet de sécurité : « Confidentialité » ne tient pas sur un écran de
+     320 px, et un mot qui ne se coupe pas pousse la page entière. */
+  overflow-wrap: break-word;
   margin: 0 0 0.5em;
 }
 
 h1 {
-  font-size: clamp(2.5rem, 7vw, 4.25rem);
+  /* Le plancher est un mot long à pleine taille, pas un choix esthétique */
+  font-size: clamp(2rem, 7vw, 4.25rem);
 }
 h2 {
   font-size: clamp(1.9rem, 4.5vw, 2.75rem);

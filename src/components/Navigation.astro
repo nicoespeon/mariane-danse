@@ -50,12 +50,15 @@ const liens = [
     display: inline-flex;
     align-items: center;
     min-height: 3rem;
+    /* Sans `min-width: 0`, un élément de flex refuse de passer sous la
+       largeur de son contenu, et c'est la page entière qui s'élargit. */
+    min-width: 0;
     font-family: var(--police-titre);
     font-weight: 600;
     font-size: 1.05rem;
+    line-height: 1.2;
     color: var(--encre);
     text-decoration: none;
-    white-space: nowrap;
   }
 
   .entete__liens {
