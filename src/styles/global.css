@@ -59,6 +59,15 @@ body {
   font-size: 1rem;
   line-height: 1.65;
   overflow-x: hidden;
+  /* Le pied de page reste collé en bas même quand le contenu est court :
+     sur /merci, il flottait au milieu d'un grand écran. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+body > main {
+  flex: 1 0 auto;
 }
 
 h1,

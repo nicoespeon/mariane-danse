@@ -191,45 +191,38 @@ Ne pas revenir dessus sans raison explicite.
   ce qui n'est pas une rivière ou un lac est de la terre, sans exception à
   tenir à jour, et les îles se lisent par les rivières qui les entourent.
 
+  **La liste des cours d'eau est explicite**, dans `EAUX`. On a essayé de la
+  déduire — par zone géographique, par taille, puis par connexité — et aucune
+  règle ne tient : un ruisseau qui fait du bruit et un chenal minuscule qui
+  empêche l'île de se souder à la Rive-Sud font tous les deux une cinquantaine
+  de pixels. Ce qui mérite d'être dessiné, ça se décide. Le script échoue si un
+  identifiant OpenStreetMap a disparu, plutôt que de laisser un trou passer.
+
   Les pièges déjà payés :
   1. Les frontières **administratives englobent l'eau**. C'est ce qui rend
-     l'inversion nécessaire, et c'est aussi pourquoi la couche d'eau ne peut
-     pas venir des mêmes sources que les terres.
-  2. Le fleuve **n'a pas de relation nommée** : autour de Montréal, c'est un
-     assemblage de surfaces `water=river` anonymes que Nominatim n'indexe pas.
-     Le script passe par Overpass, en deux temps — les identifiants dans le
-     cadre, puis les relations entières — et recolle les anneaux lui-même. En
-     une seule requête cadrée, Overpass rogne la géométrie et les anneaux ne
-     se referment plus.
-  3. Une requête Nominatim mal cadrée ramène autre chose que le territoire :
-     « Roussillon (MRC) » rendait le **bâtiment** de la MRC, rue Saint-Pierre.
-     Le script filtre sur `class=boundary` et refuse tout contour de moins de
-     huit points.
-  4. **Toute l'eau n'est pas en relations** : la voie maritime, qui sépare
-     l'île de Montréal de la Rive-Sud, est une simple `way`. Et tout le monde
-     ne pose pas `natural=water` — certains ne mettent que `water=*`. Le
-     script interroge les deux, et pré-filtre les `way` sur leur boîte
-     englobante avant d'en réclamer la géométrie : il y en a plus de mille
-     dans le cadre, dont des mares de parc.
-  5. Un cours d'eau **isolé au milieu des terres** se lit comme une rayure,
-     pas comme de l'eau. Mais aucun **seuil de taille** ne sait le distinguer
-     d'un fragment minuscule qui fait la jonction entre deux plans d'eau —
-     les deux font une cinquantaine de pixels, et sans le second l'île se
-     soude à la rive. Le critère est donc la **connexité** : on part du plus
-     grand plan d'eau et on garde ce qui s'y raccroche de proche en proche.
-  6. Douglas-Peucker mesure les écarts au segment premier→dernier point. Sur
+     l'inversion nécessaire.
+  2. **Toute l'eau n'est pas en relations** : la voie maritime, qui sépare
+     l'île de Montréal de la Rive-Sud, est une simple `way`.
+  3. Le fleuve **n'a pas de relation nommée** : autour de Montréal, c'est un
+     assemblage de surfaces anonymes. Le script recolle les anneaux lui-même,
+     et demande les relations entières plutôt que cadrées — sinon Overpass
+     rogne la géométrie et les anneaux ne se referment plus.
+  4. Douglas-Peucker mesure les écarts au segment premier→dernier point. Sur
      un **anneau fermé** ces deux points sont confondus, le segment est un
      point, et l'algorithme rabote les lobes larges. On coupe l'anneau en deux
      avant de le simplifier.
-  7. Le liseré des cours d'eau est **de la couleur de l'eau** : il les
+  5. Simplifier **trop grossièrement efface les chenaux étroits** : à cent
+     mètres près, le passage entre l'île et la Rive-Sud disparaissait.
+  6. Le liseré des cours d'eau est **de la couleur de l'eau** : il les
      élargit. À cette échelle la rivière des Prairies fait un cheveu, et c'est
      elle qui fait lire l'île de Montréal.
-  8. Les noms de villes sont en **HTML par-dessus** le SVG, et n'apparaissent
+  7. Les noms de villes sont en **HTML par-dessus** le SVG, et n'apparaissent
      qu'au-delà de 25 rem de large (requête de conteneur, pas de média : la
      carte occupe toute la largeur sur téléphone et moins de la moitié sur
      grand écran). Le seuil se règle au pixel près — à 27 rem, un écran de
      1200 px n'affichait plus aucun nom alors qu'il y avait la place. Un test
      E2E vérifie qu'aucune paire de noms ne se chevauche.
+  8. **Overpass renvoie régulièrement 429 ou 504.** Le script réessaie.
 
 - **Deux listes de villes, deux promesses.** `villesOuElleEnseigne` porte des
   coordonnées et devient un point sur la carte : c'est une preuve, on n'y met

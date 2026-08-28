@@ -63,6 +63,12 @@ const lienCourriel = ({ objet, corps }: { objet: string; corps: string }) =>
 // « Envoyer » qui ne fait rien est pire que pas de bouton. Les courriels par
 // intention, eux, restent là dans tous les cas.
 const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
+
+// Cloudflare Pages expose l'adresse du déploiement en cours. Sans ça, un envoi
+// depuis une préversion de pull request renvoie vers la production — et on ne
+// peut donc pas valider le formulaire avant de le mettre en ligne.
+const origine = process.env.CF_PAGES_URL ?? Astro.site;
+const pageDeRemerciement = new URL("/merci/", origine).href;
 ---
 
 <section class="section" id="contact">
@@ -120,11 +126,7 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
           data-form-type="other"
         >
           <input type="hidden" name="access_key" value={cleWeb3Forms} />
-          <input
-            type="hidden"
-            name="redirect"
-            value={new URL("/merci/", Astro.site).href}
-          />
+          <input type="hidden" name="redirect" value={pageDeRemerciement} />
           <input
             type="hidden"
             name="subject"
