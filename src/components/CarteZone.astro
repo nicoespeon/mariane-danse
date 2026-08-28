@@ -119,6 +119,9 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
 
   .zone__eau {
     fill: #b6e3df;
+    /* Les îles du fleuve sont des anneaux intérieurs du même tracé : c'est
+       cette règle qui les rend en creux plutôt qu'en eau. */
+    fill-rule: evenodd;
     /* Le liseré élargit les cours d'eau : à l'échelle de la région, la
        rivière des Prairies fait un cheveu — et c'est elle qui fait lire
        l'île de Montréal. */

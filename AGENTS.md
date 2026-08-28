@@ -213,16 +213,20 @@ Ne pas revenir dessus sans raison explicite.
      avant de le simplifier.
   5. Simplifier **trop grossièrement efface les chenaux étroits** : à cent
      mètres près, le passage entre l'île et la Rive-Sud disparaissait.
-  6. Le liseré des cours d'eau est **de la couleur de l'eau** : il les
+  6. Les îles du fleuve sont des **anneaux intérieurs** des relations d'eau.
+     Sans elles, l'île des Soeurs est peinte comme de l'eau. Le tracé les rend
+     en creux grâce à `fill-rule: evenodd`. Le fleuve en compte plus de cent,
+     dont la plupart font deux pixels : `ILE_MINIMALE` les écarte.
+  7. Le liseré des cours d'eau est **de la couleur de l'eau** : il les
      élargit. À cette échelle la rivière des Prairies fait un cheveu, et c'est
      elle qui fait lire l'île de Montréal.
-  7. Les noms de villes sont en **HTML par-dessus** le SVG, et n'apparaissent
+  8. Les noms de villes sont en **HTML par-dessus** le SVG, et n'apparaissent
      qu'au-delà de 25 rem de large (requête de conteneur, pas de média : la
      carte occupe toute la largeur sur téléphone et moins de la moitié sur
      grand écran). Le seuil se règle au pixel près — à 27 rem, un écran de
      1200 px n'affichait plus aucun nom alors qu'il y avait la place. Un test
      E2E vérifie qu'aucune paire de noms ne se chevauche.
-  8. **Overpass renvoie régulièrement 429 ou 504.** Le script réessaie.
+  9. **Overpass renvoie régulièrement 429 ou 504.** Le script réessaie.
 
 - **Deux listes de villes, deux promesses.** `villesOuElleEnseigne` porte des
   coordonnées et devient un point sur la carte : c'est une preuve, on n'y met

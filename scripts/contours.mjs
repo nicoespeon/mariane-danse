@@ -34,8 +34,7 @@ const EAUX = [
   { osm: "rel/6448219", nom: "Saint-Laurent (chenal de Longueuil)" },
   { osm: "rel/16740073", nom: "Rapides de Lachine" },
   { osm: "rel/16740072", nom: "Chenal au sud des rapides" },
-  { osm: "way/129896286", nom: "Voie maritime" },
-  { osm: "way/128587006", nom: "Voie maritime (section aval)" },
+  { osm: "way/128587006", nom: "Voie maritime (chenal de Kahnawake)" },
 ];
 
 // Cadre choisi à la main plutôt que déduit des formes : il tient l'île de
@@ -88,9 +87,9 @@ const memePoint = ([x1, y1], [x2, y2]) => x1 === x2 && y1 === y2;
 
 // Une relation multipolygone arrive en morceaux de tracé, dans le désordre et
 // parfois à l'envers. On les recolle bout à bout.
-const assembleAnneaux = (membres) => {
+const assembleAnneaux = (membres, role) => {
   const morceaux = membres
-    .filter((membre) => membre.role === "outer" && membre.geometry)
+    .filter((membre) => membre.role === role && membre.geometry)
     .map((membre) => membre.geometry.map((point) => [point.lon, point.lat]));
 
   const anneaux = [];
@@ -214,15 +213,23 @@ const surfacesDEau = async () => {
       );
     }
 
-    const anneaux = element.members
-      ? assembleAnneaux(element.members)
+    const exterieurs = element.members
+      ? assembleAnneaux(element.members, "outer")
       : [(element.geometry ?? []).map((point) => [point.lon, point.lat])];
+
+    const interieurs = element.members
+      ? assembleAnneaux(element.members, "inner")
+      : [];
+
+    const utilisable = (anneau) => anneau.length > 3;
+    const allege = (anneau) => simplifie(anneau, TOLERANCE_DEGRES);
 
     return {
       nom,
-      anneaux: anneaux
-        .filter((anneau) => anneau.length > 3)
-        .map((anneau) => simplifie(anneau, TOLERANCE_DEGRES)),
+      anneaux: exterieurs.filter(utilisable).map(allege),
+      // Les îles du fleuve sont des anneaux « inner » : sans elles, l'île des
+      // Soeurs est peinte comme de l'eau.
+      trous: interieurs.filter(utilisable).map(allege),
     };
   });
 };
@@ -261,19 +268,38 @@ const toucheLeCadre = (anneau) => {
   );
 };
 
-const versTrace = (anneaux) =>
-  `${anneaux
-    .filter(toucheLeCadre)
-    .map((anneau) =>
-      anneau
-        .map(projette)
-        .map(
-          ([x, y], index) =>
-            `${index === 0 ? "M" : "L"}${arrondi(x)} ${arrondi(y)}`,
-        )
-        .join(""),
+// À cette échelle, le fleuve compte plus de cent îlots dont la plupart font
+// deux pixels. Une île de deux pixels n'est pas une île.
+const ILE_MINIMALE = 12;
+
+const assezGrande = (anneau) => {
+  const points = anneau.map(projette);
+  const xs = points.map(([x]) => x);
+  const ys = points.map(([, y]) => y);
+  return (
+    Math.max(
+      Math.max(...xs) - Math.min(...xs),
+      Math.max(...ys) - Math.min(...ys),
+    ) >= ILE_MINIMALE
+  );
+};
+
+const sousTrace = (anneau) =>
+  `${anneau
+    .map(projette)
+    .map(
+      ([x, y], index) =>
+        `${index === 0 ? "M" : "L"}${arrondi(x)} ${arrondi(y)}`,
     )
     .join("")}Z`;
+
+const versTrace = (anneaux, trous) =>
+  [
+    ...anneaux.filter(toucheLeCadre),
+    ...trous.filter((trou) => toucheLeCadre(trou) && assezGrande(trou)),
+  ]
+    .map(sousTrace)
+    .join("");
 
 const dessinees = eaux.filter(({ anneaux }) => anneaux.some(toucheLeCadre));
 
@@ -293,8 +319,8 @@ export const carteRegion = {
   eaux: [
 ${dessinees
   .map(
-    ({ nom, anneaux }) =>
-      `    {\n      nom: ${JSON.stringify(nom)},\n      trace:\n        ${JSON.stringify(versTrace(anneaux))},\n    },`,
+    ({ nom, anneaux, trous }) =>
+      `    {\n      nom: ${JSON.stringify(nom)},\n      trace:\n        ${JSON.stringify(versTrace(anneaux, trous))},\n    },`,
   )
   .join("\n")}
   ],
