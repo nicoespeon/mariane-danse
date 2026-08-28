@@ -1,5 +1,7 @@
 ---
 import MediaAbsent from "./MediaAbsent.astro";
+import IconeInstagram from "./IconeInstagram.astro";
+import { site } from "../data/site";
 
 // TODO: remplacer par <Image /> et <video> une fois les médias fournis.
 // Le cadrage retenu — Mariane nette au premier plan, participants de dos ou
@@ -23,7 +25,10 @@ const emplacements = [
 <section class="section" id="galerie">
   <div class="enveloppe">
     <h2>Une séance, en images</h2>
-    <p class="chapeau">Le plus convaincant reste de voir la salle bouger.</p>
+    <p class="chapeau">
+      À quoi ressemble une séance avec Mariane&nbsp;: de l'énergie, de la
+      bienveillance, et du plaisir.
+    </p>
 
     <div class="galerie">
       {
@@ -35,6 +40,22 @@ const emplacements = [
         ))
       }
     </div>
+
+    {
+      site.instagram.actif && (
+        <a
+          class="instagram"
+          href={`https://instagram.com/${site.instagram.handle}`}
+          rel="me noopener"
+        >
+          <IconeInstagram taille="2rem" />
+          <span class="instagram__texte">
+            <strong>Ses vidéos, semaine après semaine</strong>
+            <span>@{site.instagram.handle} sur Instagram</span>
+          </span>
+        </a>
+      )
+    }
   </div>
 </section>
 
@@ -44,5 +65,37 @@ const emplacements = [
     display: grid;
     gap: 1.25rem;
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .instagram {
+    margin-top: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.25rem;
+    padding: 1rem 1.75rem;
+    border-radius: var(--rayon-large);
+    background: var(--mer-sombre);
+    color: var(--sable);
+    text-decoration: none;
+    box-shadow: var(--ombre-douce);
+    transition:
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .instagram:hover {
+    color: var(--sable);
+    transform: translateY(-2px);
+    box-shadow: var(--ombre-levee);
+  }
+
+  .instagram__texte {
+    display: grid;
+  }
+
+  .instagram__texte span {
+    font-size: 0.95rem;
+    color: var(--mer-clair);
   }
 </style>

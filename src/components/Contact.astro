@@ -1,5 +1,6 @@
 ---
 import { site } from "../data/site";
+import IconeInstagram from "./IconeInstagram.astro";
 
 // Anti-friction : plutôt qu'un champ vide, on propose des courriels déjà
 // rédigés selon qui écrit. Le visiteur n'a plus qu'à appuyer sur « Envoyer ».
@@ -94,10 +95,11 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
           site.instagram.actif && (
             <li>
               <a
+                class="coordonnees__instagram"
                 href={`https://instagram.com/${site.instagram.handle}`}
                 rel="me noopener"
               >
-                @{site.instagram.handle}
+                <IconeInstagram />@{site.instagram.handle}
               </a>
             </li>
           )
@@ -224,6 +226,10 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
+  }
+
+  .coordonnees__instagram {
+    gap: 0.5rem;
   }
 
   .formulaire {

@@ -1,6 +1,7 @@
 ---
 import { site } from "../data/site";
 import Signature from "./Signature.astro";
+import IconeInstagram from "./IconeInstagram.astro";
 
 const annee = new Date().getFullYear();
 ---
@@ -14,16 +15,18 @@ const annee = new Date().getFullYear();
 
     <nav aria-label="Liens de bas de page">
       <ul class="pied__liens">
-        <li><a href="/carte/">Ma carte à montrer</a></li>
+        <li><a href="/carte/">Carte de visite</a></li>
         <li><a href="/confidentialite/">Confidentialité</a></li>
         <li><a href={`mailto:${site.courriel}`}>{site.courriel}</a></li>
         {
           site.instagram.actif && (
             <li>
               <a
+                class="pied__instagram"
                 href={`https://instagram.com/${site.instagram.handle}`}
                 rel="me noopener"
               >
+                <IconeInstagram />
                 Instagram
               </a>
             </li>
@@ -73,6 +76,10 @@ const annee = new Date().getFullYear();
     align-items: center;
     min-height: 2.75rem;
     color: var(--mer-clair);
+  }
+
+  .pied__instagram {
+    gap: 0.5rem;
   }
 
   .pied__mention {
