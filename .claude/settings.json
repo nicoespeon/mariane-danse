@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-.}\" && pnpm exec astro dev stop >/dev/null 2>&1; pnpm exec astro preview stop >/dev/null 2>&1; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

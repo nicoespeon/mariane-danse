@@ -6,12 +6,6 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["dev"],
       "port": 4321
-    },
-    {
-      "name": "apercu",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["exec", "astro", "preview", "--port", "4331"],
-      "port": 4331
     }
   ]
 }

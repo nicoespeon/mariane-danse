@@ -33,6 +33,10 @@ de la lisibilité.
 ## Contraintes non négociables
 
 - **Statique.** Aucun serveur, aucune base de données. Tout est généré au build.
+- **Versions figées.** Toute dépendance s'installe avec une version exacte —
+  `.npmrc` porte `save-exact=true`, donc `pnpm add` s'en charge. Node et pnpm
+  sont épinglés dans `.tool-versions`. Ce site doit encore se construire dans
+  trois ans sans surprise.
 - **Accessible.** Le public final, ce sont des aînés : corps de texte à 18 px
   minimum, contraste élevé, cibles tactiles d'au moins 48 px, et toute animation
   derrière `prefers-reduced-motion`. Le budget Lighthouse exige **100** en
@@ -91,13 +95,31 @@ composant. Pour changer un texte, on ne touche pas au layout.
 
 ```bash
 pnpm dev            # serveur local sur http://localhost:4321
-pnpm check          # format + types + build + Lighthouse — ce que la CI exécute
+pnpm check          # tout ce que la CI exécute, dans le même ordre
 pnpm format         # prettier
 ```
 
-`pnpm check` est la porte de sortie : si elle passe, la CI passe. Lighthouse
-utilise le Chrome téléchargé par Puppeteer, donc les scores sont identiques en
-local et en CI.
+`pnpm check` est la porte de sortie : la CI ne lance rien d'autre que cette
+commande, donc si elle passe en local, elle passe en CI. Elle enchaîne :
+
+| Étape           | Ce qu'elle empêche                                          |
+| --------------- | ----------------------------------------------------------- |
+| `format:check`  | du style qui diverge d'une machine à l'autre                |
+| `check:lint`    | ESLint : variables mortes, `console.log` oublié             |
+| `check:types`   | `astro check`                                               |
+| `check:morts`   | Knip : un fichier ou un export que plus personne n'importe  |
+| `build`         |                                                             |
+| `check:typo`    | la typographie française au lieu de la québécoise           |
+| `check:e2e`     | Playwright : accessibilité, rendu mobile, liens, formulaire |
+| `check:quality` | Lighthouse : performance, accessibilité, SEO                |
+
+Lighthouse utilise le Chrome téléchargé par Puppeteer, donc les scores sont
+identiques en local et en CI.
+
+Les tests E2E servent `dist/` avec `sirv`, pas avec `astro preview` : ce dernier
+se démonise, donc Playwright voit son processus mourir aussitôt et abandonne.
+Deux navigateurs, Chromium et WebKit — WebKit parce que Mariane montre le site
+depuis son téléphone, et que c'est Safari qui s'y exécute.
 
 ## Voir le site pendant qu'on le modifie
 

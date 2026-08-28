@@ -33,23 +33,21 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm run format:check
+      - run: pnpm exec playwright install --with-deps chromium webkit
 
-      - run: pnpm run check:types
-
-      - run: pnpm run build
+      - run: pnpm run check
         env:
           PUBLIC_WEB3FORMS_KEY: ${{ secrets.PUBLIC_WEB3FORMS_KEY }}
 
-      # Bloque la fusion si la performance, l'accessibilité ou le SEO régressent
-      - run: pnpm run check:quality
-
-      # Le rapport détaillé n'est écrit sur disque que lorsqu'une assertion casse
+      # Les rapports ne sont écrits que lorsqu'une assertion casse
       - uses: actions/upload-artifact@v5
         if: failure()
         with:
-          name: rapport-lighthouse
-          path: .lighthouseci/
+          name: rapports-qualite
+          path: |
+            .lighthouseci/
+            playwright-report/
+            test-results/
           retention-days: 7
 
       - uses: actions/upload-artifact@v5
