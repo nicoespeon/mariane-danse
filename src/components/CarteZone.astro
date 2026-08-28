@@ -85,15 +85,14 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     }
   </div>
 
-  <ul class="zone__legende">
-    {villes.map((ville) => <li>{ville.nom}</li>)}
-  </ul>
-
   <figcaption>
-    Fonds de carte{" "}
-    <a href="https://www.openstreetmap.org/copyright" rel="noopener">
-      © les contributeurs d'OpenStreetMap
-    </a>.
+    <span class="zone__villes">{nomsDeVilles.join(", ")}.</span>{" "}
+    <span>
+      Fonds de carte{" "}
+      <a href="https://www.openstreetmap.org/copyright" rel="noopener">
+        © les contributeurs d'OpenStreetMap
+      </a>.
+    </span>
   </figcaption>
 </figure>
 
@@ -102,14 +101,15 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     margin: 0;
     display: grid;
     gap: 0.75rem;
+    /* Les noms se règlent sur la largeur de la carte, pas sur celle de la
+       fenêtre : la carte prend toute la largeur sur téléphone mais moins de
+       la moitié sur grand écran, donc une requête de média dirait n'importe
+       quoi. Le conteneur porte aussi la légende, qui prend le relais. */
+    container-type: inline-size;
   }
 
   .zone__cadre {
     position: relative;
-    /* La taille des étiquettes se règle sur la carte, pas sur la fenêtre :
-       la carte occupe toute la largeur sur téléphone mais moins de la moitié
-       sur grand écran, donc une requête de média dirait n'importe quoi. */
-    container-type: inline-size;
   }
 
   .zone svg {
@@ -174,34 +174,25 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     }
   }
 
-  .zone__legende {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem 1.25rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--encre);
-  }
-
-  .zone__legende li {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-  }
-
-  .zone__legende li::before {
-    content: "";
-    width: 0.7rem;
-    height: 0.7rem;
-    border-radius: 999px;
-    background: var(--soleil-vif);
+  /* Les noms passent de la carte à la légende, jamais les deux à la fois :
+     répétés, ils ne sont que du bruit, et une puce de la même couleur pour
+     chaque ville ne ferait qu'imiter une légende sans rien expliquer. */
+  @container (min-width: 27rem) {
+    .zone__villes {
+      display: none;
+    }
   }
 
   .zone figcaption {
+    display: grid;
+    gap: 0.35rem;
     color: var(--encre-doux);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .zone__villes {
+    color: var(--encre);
+    font-size: 1rem;
+    font-weight: 600;
   }
 </style>
