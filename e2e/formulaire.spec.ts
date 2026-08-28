@@ -59,16 +59,23 @@ test.describe("formulaire de contact", () => {
     });
 
     // Sans ce champ, Web3Forms renvoie vers sa propre page de confirmation,
-    // en anglais — sur un site qui n'a pas de version anglaise.
-    test("renvoie vers notre page de remerciement", async ({ page }) => {
+    // en anglais — sur un site qui n'a pas de version anglaise. Et sur le plan
+    // gratuit, ils refusent toute redirection vers un autre domaine que celui
+    // d'où part le formulaire : viser la production depuis une préversion ne
+    // marche pas, et échoue en silence.
+    test("renvoie vers notre page de remerciement, sur le même domaine", async ({
+      page,
+    }) => {
       const redirection = page.locator(
         "form.formulaire input[name='redirect']",
       );
 
-      await expect(redirection).toHaveValue(/\/merci\/$/);
+      const cible = await redirection.inputValue();
+      const origineDeLaPage = new URL(page.url()).origin;
 
-      const cible = await redirection.getAttribute("value");
-      const reponse = await page.request.get(new URL(cible ?? "").pathname);
+      expect(cible).toBe(new URL("/merci/", origineDeLaPage).href);
+
+      const reponse = await page.request.get("/merci/");
       expect(reponse.status()).toBe(200);
     });
 

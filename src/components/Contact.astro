@@ -201,6 +201,19 @@ const objetDuCourriel = `Nouvelle demande via ${Astro.site?.host ?? "marianedans
       )
     }
   </div>
+
+  <script is:inline>
+    // La redirection doit rester sur le domaine d'où part le formulaire :
+    // Web3Forms refuse le reste sur le plan gratuit. Écrite au build, elle
+    // vise la production ; recalée ici, elle suit la page courante —
+    // préversion Cloudflare comprise. Sans JavaScript, la valeur du build
+    // reste la bonne en production.
+    const champRedirection = document.querySelector(
+      ".formulaire input[name='redirect']",
+    );
+    if (champRedirection)
+      champRedirection.value = new URL("/merci/", location.origin).href;
+  </script>
 </section>
 
 <style>
