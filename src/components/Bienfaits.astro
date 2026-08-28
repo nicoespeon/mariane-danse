@@ -28,9 +28,10 @@ const arguments_ = [
 ];
 ---
 
-<Vague couleur="var(--mer-sombre)" />
-
 <section class="section section--mer" id="bienfaits">
+  <Vague couleur="var(--mer-sombre)" bord="haut" />
+  <Vague couleur="var(--mer-sombre)" bord="bas" />
+
   <div class="enveloppe">
     <h2>Pourquoi les organismes la rappellent</h2>
     <p class="chapeau">
@@ -56,8 +57,6 @@ const arguments_ = [
     </p>
   </div>
 </section>
-
-<Vague couleur="var(--mer-sombre)" retournee={true} />
 
 <style>
   .arguments {

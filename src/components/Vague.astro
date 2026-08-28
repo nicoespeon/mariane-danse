@@ -1,23 +1,33 @@
 ---
-type Props = { couleur?: string; retournee?: boolean };
-const { couleur = "var(--sable)", retournee = false } = Astro.props;
+// La vague appartient à sa section et déborde sur la voisine, plutôt que de
+// s'intercaler entre les deux : elle n'a donc rien à savoir des couleurs
+// d'à côté, et il ne peut plus rester de bande de fond entre les deux.
+type Props = { couleur: string; bord: "haut" | "bas" };
+const { couleur, bord } = Astro.props;
 ---
 
-<div
-  class:list={["vague", { "vague--retournee": retournee }]}
-  aria-hidden="true"
->
+<div class:list={["vague", `vague--${bord}`]} aria-hidden="true">
+  {
+    /* Le tracé descend sous le bas du viewBox : à l'exact pixel près, le
+      redimensionnement laissait apparaître un cheveu blanc. */
+  }
   <svg viewBox="0 0 1440 90" preserveAspectRatio="none" focusable="false">
     <path
       fill={couleur}
-      d="M0 45c120-30 240-45 360-30s240 60 360 60 240-45 360-60 240 0 360 15v60H0z"
+      d="M0 45c120-30 240-45 360-30s240 60 360 60 240-45 360-60 240 0 360 15v75H0z"
     ></path>
   </svg>
 </div>
 
 <style>
   .vague {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* Au-dessus du fond de la section voisine, sous la barre de navigation */
+    z-index: 1;
     line-height: 0;
+    pointer-events: none;
   }
 
   .vague svg {
@@ -25,7 +35,18 @@ const { couleur = "var(--sable)", retournee = false } = Astro.props;
     height: clamp(30px, 5vw, 70px);
   }
 
-  .vague--retournee svg {
+  /* Le pixel de recouvrement absorbe l'arrondi sous-pixel du navigateur. */
+  .vague--haut {
+    bottom: 100%;
+    margin-bottom: -1px;
+  }
+
+  .vague--bas {
+    top: 100%;
+    margin-top: -1px;
+  }
+
+  .vague--bas svg {
     transform: rotate(180deg);
   }
 </style>
