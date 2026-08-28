@@ -73,6 +73,19 @@ pnpm format         # prettier
 utilise le Chrome téléchargé par Puppeteer, donc les scores sont identiques en
 local et en CI.
 
+## Voir le site pendant qu'on le modifie
+
+Le panneau navigateur démarre le serveur via `.claude/launch.json` :
+`preview_start` avec `{"name": "site"}`, depuis la racine du dépôt.
+
+Une bizarrerie à connaître : **une capture d'écran après un défilement revient
+vide.** Le panneau ne repeint que sur navigation ou sur changement du DOM. Pour
+voir une section basse, agrandir la fenêtre à la hauteur de la page entière
+(`resize_window` en 1200 × 6900, par exemple) puis naviguer — la page tient dans
+une seule capture. Pour un gros plan, supprimer les sections du dessus avec
+`javascript_tool` : la suppression provoque un repaint, contrairement au
+défilement.
+
 ## Décisions déjà prises
 
 Ne pas revenir dessus sans raison explicite.
