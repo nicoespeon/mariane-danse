@@ -66,19 +66,9 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 
 // Sur le plan gratuit, Web3Forms n'accepte la redirection que vers le domaine
 // d'où part le formulaire : « Cross domain redirection requires a paid plan ».
-// Une préversion de pull request doit donc renvoyer vers elle-même, sinon on
-// ne peut pas valider le formulaire avant la mise en ligne.
-//
-// Cloudflare définit CF_PAGES_URL pour tous les déploiements, production
-// comprise. S'en servir sans distinction enverrait la production vers son
-// adresse .pages.dev alors que le visiteur est sur le domaine — donc vers un
-// autre domaine, donc nulle part.
-const surLaProduction = process.env.CF_PAGES_BRANCH === "main";
-const origine =
-  !surLaProduction && process.env.CF_PAGES_URL
-    ? process.env.CF_PAGES_URL
-    : Astro.site;
-const pageDeRemerciement = new URL("/merci/", origine).href;
+// Cette valeur-là vise la production ; le script en bas de composant la recale
+// sur la page courante, ce qui la rend juste en préversion comme en local.
+const pageDeRemerciement = new URL("/merci/", Astro.site).href;
 
 // Dans une boîte de réception, « Nouveau message depuis le site » ne dit ni
 // de quel site ni de quoi il s'agit. Le domaine se lit depuis la config pour
