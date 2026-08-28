@@ -62,7 +62,15 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
 
       {
         villes.map((ville) => (
-          <circle class="zone__point" cx={ville.x} cy={ville.y} r="9" />
+          <circle
+            class:list={[
+              "zone__point",
+              { "zone__point--repere": ville.estUnRepere },
+            ]}
+            cx={ville.x}
+            cy={ville.y}
+            r="9"
+          />
         ))
       }
     </svg>
@@ -81,7 +89,6 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
   </div>
 
   <figcaption>
-    <span class="zone__villes">{nomsDeVilles.join(", ")}.</span>{" "}
     <span>
       Fonds de carte{" "}
       <a href="https://www.openstreetmap.org/copyright" rel="noopener">
@@ -130,7 +137,18 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     stroke-linejoin: round;
   }
 
+  /* Un point sans nom n'apprend rien : sous le seuil où les noms tiennent,
+     seuls les deux repères restent. */
   .zone__point {
+    display: none;
+  }
+
+  .zone__point--repere {
+    display: revert;
+  }
+
+  .zone__point,
+  .zone__point--repere {
     fill: var(--soleil-vif);
     stroke: var(--sable);
     stroke-width: 3;
@@ -167,27 +185,19 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     .zone__nom {
       display: block;
     }
+
+    .zone__point {
+      display: revert;
+    }
   }
 
   /* Les noms passent de la carte à la légende, jamais les deux à la fois :
      répétés, ils ne sont que du bruit, et une puce de la même couleur pour
      chaque ville ne ferait qu'imiter une légende sans rien expliquer. */
-  @container (min-width: 25rem) {
-    .zone__villes {
-      display: none;
-    }
-  }
-
   .zone figcaption {
     display: grid;
     gap: 0.35rem;
     color: var(--encre-doux);
     font-size: 0.8rem;
-  }
-
-  .zone__villes {
-    color: var(--encre);
-    font-size: 1rem;
-    font-weight: 600;
   }
 </style>
