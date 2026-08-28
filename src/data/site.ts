@@ -18,7 +18,7 @@ export const site = {
 // on affiche le numéro, qui lui ne bouge pas, et on laisse zumba.com faire foi.
 export const licence = {
   zinId: "4513608",
-  verification: "https://www.zumba.com/en-US/instructor",
+  profil: "https://www.zumba.com/en-US/p/mariane-carlo/4513608",
   intitules: ["Zumba®", "Zumba Gold®"],
 } as const;
 

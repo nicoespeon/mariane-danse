@@ -18,12 +18,13 @@ const offres = (await getCollection("offres")).sort(
       {
         offres.map((offre) => (
           <li class="offre">
-            <span class="offre__emoji" aria-hidden="true">
-              {offre.data.emoji}
-            </span>
-            <h3>{offre.data.titre}</h3>
+            <h3 class="offre__titre">
+              <span class="offre__emoji" aria-hidden="true">
+                {offre.data.emoji}
+              </span>
+              {offre.data.titre}
+            </h3>
             <p class="offre__pour">{offre.data.pour}</p>
-            <p>{offre.data.resume}</p>
             <ul class="offre__bienfaits">
               {offre.data.bienfaits.map((bienfait) => (
                 <li>{bienfait}</li>
@@ -61,7 +62,7 @@ const offres = (await getCollection("offres")).sort(
   }
 
   .offre {
-    padding: 1.75rem;
+    padding: 1.5rem;
     background: #fff;
     border: 1px solid rgb(20 38 44 / 0.08);
     border-radius: var(--rayon-large);
@@ -76,26 +77,29 @@ const offres = (await getCollection("offres")).sort(
     box-shadow: var(--ombre-levee);
   }
 
+  .offre__titre {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.35rem;
+  }
+
   .offre__emoji {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 0.5rem;
+    font-size: 1.6rem;
+    flex: 0 0 auto;
   }
 
   .offre__pour {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--mer);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
   }
 
   .offre__bienfaits {
     margin: 0;
     padding-left: 1.1rem;
     color: var(--encre-doux);
-    font-size: 0.95rem;
   }
 
   .offre__bienfaits li {

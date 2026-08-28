@@ -7,8 +7,10 @@ const offres = defineCollection({
   schema: z.object({
     titre: z.string(),
     pour: z.string(),
+    // Ne s'affiche pas sur la carte, sert de description dans le JSON-LD
     resume: z.string(),
-    bienfaits: z.array(z.string()),
+    // Trois, pas quatre : au-delà, la carte devient un mur de texte
+    bienfaits: z.array(z.string()).min(2).max(3),
     ordre: z.number(),
     emoji: z.string(),
   }),
