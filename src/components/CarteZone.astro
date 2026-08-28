@@ -1,0 +1,134 @@
+---
+import { baseDeDeplacement, zonesDesservies } from "../data/site";
+
+// Plutôt qu'une capture de Google Maps (lourde, et dont les conditions
+// d'utilisation interdisent la rediffusion), on projette les vraies
+// coordonnées : c'est exact, ça pèse deux kilo-octets et c'est aux couleurs
+// du site.
+const KM_PAR_DEGRE_LATITUDE = 110.57;
+const KM_PAR_DEGRE_LONGITUDE = 111.32;
+
+const versKilometres = ({
+  latitude,
+  longitude,
+}: {
+  latitude: number;
+  longitude: number;
+}) => ({
+  est:
+    (longitude - baseDeDeplacement.longitude) *
+    Math.cos((baseDeDeplacement.latitude * Math.PI) / 180) *
+    KM_PAR_DEGRE_LONGITUDE,
+  nord: (latitude - baseDeDeplacement.latitude) * KM_PAR_DEGRE_LATITUDE,
+});
+
+const RAYON_DESSIN = 130;
+const echelle = RAYON_DESSIN / baseDeDeplacement.rayonKm;
+
+const villes = zonesDesservies.map((ville) => {
+  const { est, nord } = versKilometres(ville);
+  return {
+    nom: ville.nom,
+    x: est * echelle,
+    // L'axe des y d'un SVG descend, celui du nord monte
+    y: -nord * echelle,
+    estLaBase: ville.nom === baseDeDeplacement.nom,
+  };
+});
+---
+
+<figure class="zone">
+  {/* La boîte est plus large que le cercle : les noms de villes débordent */}
+  <svg viewBox="-205 -165 410 330" role="img" aria-labelledby="zone-titre">
+    <title id="zone-titre">
+      Carte simplifiée des villes desservies autour de {baseDeDeplacement.nom},
+      dans un rayon d'environ {baseDeDeplacement.minutesDeRoute} minutes de route
+    </title>
+
+    <circle class="zone__halo" r={RAYON_DESSIN}></circle>
+    <circle class="zone__anneau" r={RAYON_DESSIN}></circle>
+    <circle class="zone__anneau zone__anneau--interieur" r={RAYON_DESSIN / 2}
+    ></circle>
+
+    {
+      villes.map((ville) => (
+        <g transform={`translate(${ville.x} ${ville.y})`}>
+          <circle
+            class:list={[
+              "zone__point",
+              { "zone__point--base": ville.estLaBase },
+            ]}
+            r={ville.estLaBase ? 7 : 4.5}
+          />
+          <text
+            class="zone__nom"
+            x={ville.x < 0 ? -10 : 10}
+            y="4"
+            text-anchor={ville.x < 0 ? "end" : "start"}
+          >
+            {ville.nom}
+          </text>
+        </g>
+      ))
+    }
+  </svg>
+
+  <figcaption>
+    Environ {baseDeDeplacement.minutesDeRoute} minutes de route autour de {
+      baseDeDeplacement.nom
+    }. Plus loin ? Demandez quand même.
+  </figcaption>
+</figure>
+
+<style>
+  .zone {
+    margin: 0;
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+  }
+
+  .zone svg {
+    width: min(30rem, 100%);
+    height: auto;
+  }
+
+  .zone__halo {
+    fill: var(--mer-brume);
+  }
+
+  .zone__anneau {
+    fill: none;
+    stroke: var(--mer-clair);
+    stroke-width: 2;
+  }
+
+  .zone__anneau--interieur {
+    stroke-dasharray: 5 7;
+    opacity: 0.7;
+  }
+
+  .zone__point {
+    fill: var(--mer);
+  }
+
+  .zone__point--base {
+    fill: var(--soleil-vif);
+    stroke: var(--sable);
+    stroke-width: 2.5;
+  }
+
+  .zone__nom {
+    font-family: var(--police-texte);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--encre);
+  }
+
+  .zone figcaption {
+    max-width: 34ch;
+    text-align: center;
+    color: var(--encre-doux);
+    font-size: 0.95rem;
+  }
+</style>
