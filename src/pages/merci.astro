@@ -1,0 +1,88 @@
+---
+import Base from "../layouts/Base.astro";
+import Pied from "../components/Pied.astro";
+import Soleil from "../components/Soleil.astro";
+import { site } from "../data/site";
+
+// Web3Forms renvoie sinon vers sa propre page de confirmation, en anglais et
+// aux couleurs de personne. C'est le dernier écran que voit un coordonnateur.
+---
+
+<Base
+  titre={`Message envoyé — ${site.nom}`}
+  description="Votre message est parti dans la boîte de Mariane."
+  navigation={false}
+  indexable={false}
+>
+  <div class="merci">
+    <div class="merci__soleil" aria-hidden="true"><Soleil /></div>
+
+    <div class="merci__contenu">
+      <h1>C'est envoyé!</h1>
+
+      <p class="merci__texte">
+        Votre message est parti dans la boîte de Mariane. C'est elle qui vous
+        répondra, personnellement.
+      </p>
+
+      <p class="merci__texte">
+        Si c'est pressant, vous pouvez aussi l'appeler directement.
+      </p>
+
+      <div class="merci__actions">
+        <a class="bouton bouton--principal" href={`tel:${site.telephone}`}>
+          {site.telephoneAffiche}
+        </a>
+        <a class="bouton bouton--fantome" href="/">Retour à l'accueil</a>
+      </div>
+    </div>
+  </div>
+
+  <Pied slot="pied" />
+</Base>
+
+<style>
+  .merci {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    min-height: 70vh;
+    padding: clamp(3rem, 10vw, 6rem) var(--gouttiere);
+    background:
+      radial-gradient(90% 60% at 50% 0%, var(--sable-creux), transparent 70%),
+      var(--sable);
+  }
+
+  .merci__soleil {
+    position: absolute;
+    top: -7rem;
+    right: -7rem;
+    width: min(26rem, 60vw);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .merci__contenu {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    max-width: 34rem;
+    text-align: center;
+  }
+
+  .merci__texte {
+    max-width: 34ch;
+    font-size: 1.15rem;
+    color: var(--encre-doux);
+  }
+
+  .merci__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+</style>

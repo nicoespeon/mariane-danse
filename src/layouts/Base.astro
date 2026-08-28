@@ -7,9 +7,11 @@ type Props = {
   description: string;
   /** Les pages utilitaires (carte, confidentialité) n'ont pas la navigation */
   navigation?: boolean;
+  /** Une page qui n'a de sens qu'après une action n'a rien à faire dans l'index */
+  indexable?: boolean;
 };
 
-const { titre, description, navigation = true } = Astro.props;
+const { titre, description, navigation = true, indexable = true } = Astro.props;
 const canonique = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -21,6 +23,7 @@ const canonique = new URL(Astro.url.pathname, Astro.site);
     <title>{titre}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonique} />
+    {!indexable && <meta name="robots" content="noindex, follow" />}
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_CA" />

@@ -122,6 +122,11 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
           <input type="hidden" name="access_key" value={cleWeb3Forms} />
           <input
             type="hidden"
+            name="redirect"
+            value={new URL("/merci/", Astro.site).href}
+          />
+          <input
+            type="hidden"
             name="subject"
             value="Nouveau message depuis le site"
           />

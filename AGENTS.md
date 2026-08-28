@@ -83,6 +83,7 @@ src/
   layouts/Base.astro   <head>, SEO, slots « tete » / « navigation » / « pied »
   pages/
     index.astro        La page unique
+    merci.astro        Après l'envoi du formulaire, à la place de Web3Forms
     carte.astro        Page « écran à montrer » : QR + partage natif
     contact.vcf.ts     Fiche contact générée au build
     confidentialite.astro

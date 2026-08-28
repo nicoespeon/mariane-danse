@@ -58,6 +58,20 @@ test.describe("formulaire de contact", () => {
       }
     });
 
+    // Sans ce champ, Web3Forms renvoie vers sa propre page de confirmation,
+    // en anglais — sur un site qui n'a pas de version anglaise.
+    test("renvoie vers notre page de remerciement", async ({ page }) => {
+      const redirection = page.locator(
+        "form.formulaire input[name='redirect']",
+      );
+
+      await expect(redirection).toHaveValue(/\/merci\/$/);
+
+      const cible = await redirection.getAttribute("value");
+      const reponse = await page.request.get(new URL(cible ?? "").pathname);
+      expect(reponse.status()).toBe(200);
+    });
+
     test("porte la clé qui autorise l'envoi", async ({ page }) => {
       const cle = page.locator("form.formulaire input[name='access_key']");
 
