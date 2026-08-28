@@ -1,5 +1,6 @@
 ---
 import Vague from "./Vague.astro";
+import { licence } from "../data/site";
 
 // Section écrite pour les coordonnateurs de loisirs : ce qu'ils devront
 // justifier auprès de leur direction, pas ce qui fait rêver le grand public.
@@ -46,6 +47,14 @@ const arguments_ = [
         ))
       }
     </ul>
+
+    <p class="licence">
+      Membre licenciée du <strong>Zumba Instructor Network</strong>, ZIN n<sup
+        >o</sup
+      >&nbsp;{licence.zinId} — {licence.intitules.join(" et ")}.
+      <a href={licence.verification} rel="noopener">Vérifiable sur zumba.com</a
+      >.
+    </p>
   </div>
 </section>
 
@@ -77,5 +86,19 @@ const arguments_ = [
   .argument p {
     color: var(--mer-brume);
     margin: 0;
+  }
+
+  .licence {
+    margin: 2.5rem 0 0;
+    padding: 1rem 1.5rem;
+    max-width: none;
+    border-radius: var(--rayon);
+    background: rgb(255 255 255 / 0.08);
+    color: var(--mer-brume);
+    font-size: 0.95rem;
+  }
+
+  .licence strong {
+    color: var(--sable);
   }
 </style>
