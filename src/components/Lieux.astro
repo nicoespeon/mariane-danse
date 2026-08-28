@@ -1,6 +1,6 @@
 ---
 import CarteZone from "./CarteZone.astro";
-import { autresVillesDesservies } from "../data/site";
+import { villesRiveNord } from "../data/site";
 
 // Sert autant au visiteur qu'au référencement local : c'est la page qui doit
 // sortir sur « zumba aînés résidence laval ».
@@ -22,8 +22,8 @@ const milieux = [
     <h2>Où Mariane se déplace</h2>
     <p class="chapeau">Laval, Montréal et la Rive-Nord.</p>
     <p class="precision">
-      Sur la Rive-Nord&nbsp;: {autresVillesDesservies.slice(0, -1).join(", ")}
-      {" "}et {autresVillesDesservies.at(-1)}.
+      La Rive-Nord, c'est grand. Pour situer&nbsp;: {villesRiveNord.join(", ")}
+      {" "}— et les villes voisines, à la même distance de route.
     </p>
 
     <div class="lieux">

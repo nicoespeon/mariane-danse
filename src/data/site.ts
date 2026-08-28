@@ -35,11 +35,17 @@ export const villesOuElleEnseigne = [
   { nom: "Montréal", latitude: 45.508, longitude: -73.561 },
 ] as const;
 
-// Celle-là décrit le territoire qu'elle couvre — « Laval, Montréal et la
-// Rive-Nord », en nommant les villes que les gens d'ici reconnaissent. Pas de
-// coordonnées : elle ne pose aucun point sur la carte, elle nourrit le
-// référencement local et la phrase de la section « Où Mariane se déplace ».
-export const autresVillesDesservies = [
+// « Rive-Nord », ça ne dit rien à qui ne connaît pas la région, et c'est
+// grand. Cette liste sert d'exemples : elle nomme des villes que les gens
+// d'ici reconnaissent, à la distance où Mariane se déplace. Elle n'est pas
+// exhaustive, et le texte du site le dit.
+//
+// Sainte-Thérèse et Saint-Eustache y figurent aussi, alors qu'elles ont un
+// point sur la carte : il serait étrange de les voir sur la carte sans les
+// nommer dans la phrase qui l'accompagne.
+export const villesRiveNord = [
+  "Sainte-Thérèse",
+  "Saint-Eustache",
   "Blainville",
   "Boisbriand",
   "Rosemère",

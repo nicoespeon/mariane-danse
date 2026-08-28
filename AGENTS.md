@@ -176,41 +176,46 @@ Ne pas revenir dessus sans raison explicite.
   (61 × 61 modules).
   Les boutons sous le code servent l'autre entrée : quelqu'un à qui Mariane a
   envoyé le lien, et qui lit déjà la page sur son téléphone.
-- **Zone desservie dessinée, pas capturée.** `CarteZone.astro` trace les vrais
-  contours de l'île de Montréal, de l'île Jésus et de la Rive-Nord. Ils viennent
-  d'OpenStreetMap via `scripts/contours.mjs`, et sont figés dans
-  `src/data/contours.ts` : le build reste hors ligne, la carte pèse dix
-  kilo-octets, elle est aux couleurs du site et échappe aux conditions
-  d'utilisation de Google Maps. Pour ajouter une ville, il suffit de l'ajouter
-  à `zonesDesservies` ; pour changer un territoire, on modifie `TERRITOIRES`
-  dans le script et on le relance.
-  Cinq pièges déjà payés :
-  1. Les frontières **administratives** englobent l'eau : les rivières
-     disparaissent et les îles ne se lisent plus. D'où `place=island` pour
-     Montréal, Laval et l'île Bizard, et une couche d'eau par-dessus les
-     rives. Le fleuve n'a pas de relation nommée — autour de Montréal, c'est
-     un assemblage de surfaces `water=river` anonymes que Nominatim n'indexe
-     pas. Le script passe par Overpass et recolle les anneaux lui-même.
-     Simplifier les lacs plus grossièrement que les terres ne marche pas
-     non plus : la rive sud du lac Saint-Louis avalait Châteauguay.
-  2. **Aucun contour** sur les terres. Le trait foncé faisait tout le bruit, et
-     il dessinait des limites de MRC que personne ne voit sur le terrain. Sans
-     lui, les rives voisines fondent en une seule masse et le cadre fixe rejette
-     leurs limites hors champ.
-  3. Le liseré des îles est **de la couleur de l'eau**, celui des rives de la
-     couleur de la terre : les premières s'érodent, ce qui élargit la rivière
-     des Prairies — un cheveu à cette échelle, mais c'est elle qui fait lire
-     l'île de Montréal. Les secondes se soudent entre elles.
-  4. Une requête Nominatim mal cadrée ramène autre chose que le territoire —
-     « Roussillon (MRC) » rendait le **bâtiment** de la MRC, rue Saint-Pierre,
-     et le trou d'eau qui en résultait est passé inaperçu. Le script filtre
-     désormais sur `class=boundary` et refuse tout contour réduit à moins de
+- **Carte dessinée, pas capturée — et on ne dessine que l'eau.**
+  `CarteZone.astro` pose un fond de terre et trace par-dessus les rivières et
+  les lacs. Les tracés viennent d'OpenStreetMap via `scripts/contours.mjs` et
+  sont figés dans `src/data/contours.ts` : le build reste hors ligne, la carte
+  pèse une vingtaine de kilo-octets, elle est aux couleurs du site et échappe
+  aux conditions d'utilisation de Google Maps.
+
+  **Ne pas revenir à un dessin des terres.** On l'a fait, et chaque version
+  laissait un trou : une MRC oubliée, puis une autre, puis Kahnawake — qui
+  n'appartient à aucune MRC. Assembler des frontières administratives, c'est
+  s'engager à connaître le découpage entier de la région. L'eau se suffit :
+  ce qui n'est pas une rivière ou un lac est de la terre, sans exception à
+  tenir à jour, et les îles se lisent par les rivières qui les entourent.
+
+  Les pièges déjà payés :
+  1. Les frontières **administratives englobent l'eau**. C'est ce qui rend
+     l'inversion nécessaire, et c'est aussi pourquoi la couche d'eau ne peut
+     pas venir des mêmes sources que les terres.
+  2. Le fleuve **n'a pas de relation nommée** : autour de Montréal, c'est un
+     assemblage de surfaces `water=river` anonymes que Nominatim n'indexe pas.
+     Le script passe par Overpass, en deux temps — les identifiants dans le
+     cadre, puis les relations entières — et recolle les anneaux lui-même. En
+     une seule requête cadrée, Overpass rogne la géométrie et les anneaux ne
+     se referment plus.
+  3. Une requête Nominatim mal cadrée ramène autre chose que le territoire :
+     « Roussillon (MRC) » rendait le **bâtiment** de la MRC, rue Saint-Pierre.
+     Le script filtre sur `class=boundary` et refuse tout contour de moins de
      huit points.
-  5. Les noms sont en **HTML par-dessus** le SVG, et n'apparaissent qu'au-delà
-     de 27 rem de large (requête de conteneur, pas de média : la carte occupe
-     toute la largeur sur téléphone et moins de la moitié sur grand écran).
-     Six noms sur 275 px se marchent dessus ; en dessous, la légende prend le
-     relais.
+  4. Les cours d'eau **minuscules se lisent comme des rayures**, pas comme de
+     l'eau. En dessous de `SURFACE_MINIMALE`, ils sortent.
+  5. Le liseré des cours d'eau est **de la couleur de l'eau** : il les
+     élargit. À cette échelle la rivière des Prairies fait un cheveu, et c'est
+     elle qui fait lire l'île de Montréal.
+  6. Les noms de villes sont en **HTML par-dessus** le SVG, et n'apparaissent
+     qu'au-delà de 25 rem de large (requête de conteneur, pas de média : la
+     carte occupe toute la largeur sur téléphone et moins de la moitié sur
+     grand écran). Le seuil se règle au pixel près — à 27 rem, un écran de
+     1200 px n'affichait plus aucun nom alors qu'il y avait la place. Un test
+     E2E vérifie qu'aucune paire de noms ne se chevauche.
+
 - **Deux listes de villes, deux promesses.** `villesOuElleEnseigne` porte des
   coordonnées et devient un point sur la carte : c'est une preuve, on n'y met
   que des villes où Mariane donne effectivement des cours.

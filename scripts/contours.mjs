@@ -1,43 +1,24 @@
-// Regénère les contours de la carte des territoires desservis.
+// Regénère le fond de carte de la section « Où Mariane se déplace ».
 //   node scripts/contours.mjs
 // Les données viennent d'OpenStreetMap (ODbL) et sont figées dans
 // src/data/contours.ts : le build reste hors ligne, et la carte ne change
 // que le jour où on relance ce script volontairement.
+//
+// On ne dessine que l'eau. La terre, c'est le fond de la carte. Dessiner les
+// terres revenait à assembler des frontières administratives, et chacune
+// laissait un trou : une MRC oubliée, puis une autre, puis Kahnawake — qui
+// n'appartient à aucune MRC. L'eau, elle, se suffit : ce qui n'est pas une
+// rivière ou un lac est de la terre, sans exception à tenir à jour.
 import { writeFile } from "node:fs/promises";
 
 const AGENT = "mariane-danse-site/1.0 (nicolascarlo.espeon@gmail.com)";
-
-// Les frontières administratives englobent l'eau : dessinées telles quelles,
-// les rivières disparaissent et les îles ne se lisent plus. On prend donc les
-// vraies îles (place=island), et on complète les rives avec les MRC voisines.
-//
-// Ces MRC ont des limites administratives arbitraires — personne ne « voit »
-// la frontière de Thérèse-De Blainville. Deux choses les effacent : le cadre
-// fixe ci-dessous, qui rejette ces limites hors champ, et l'absence de
-// contour au tracé, qui fond les terres voisines en une seule masse.
-const TERRITOIRES = [
-  { nom: "Deux-Montagnes", requete: "Deux-Montagnes (MRC), Québec, Canada" },
-  { nom: "Mirabel", requete: "Mirabel, Laurentides, Québec, Canada" },
-  { nom: "Thérèse-De Blainville", requete: "Thérèse-De Blainville, Québec" },
-  { nom: "Les Moulins", requete: "Les Moulins, Québec, Canada" },
-  { nom: "L'Assomption", requete: "L'Assomption (MRC), Québec, Canada" },
-  { nom: "Vaudreuil-Soulanges", requete: "Vaudreuil-Soulanges, Québec" },
-  { nom: "Roussillon", requete: "Roussillon, Montérégie, Québec, Canada" },
-  { nom: "Longueuil", requete: "Agglomération de Longueuil" },
-  { nom: "Marguerite-D'Youville", requete: "Marguerite-D'Youville, Québec" },
-  { nom: "Laval", requete: "Île Jésus, Laval", ile: true },
-  { nom: "Montréal", requete: "Île de Montréal", ile: true },
-  { nom: "Île Bizard", requete: "Île Bizard", ile: true },
-];
 
 // Le fleuve n'a pas de relation nommée : dans OpenStreetMap, le Saint-Laurent
 // autour de Montréal est un assemblage de surfaces `water=river` anonymes.
 // Nominatim ne les indexe donc pas, et on passe par Overpass.
 const CADRE_DES_EAUX = "45.35,-74.10,45.80,-73.35";
 
-// Les limites de MRC englobent les plans d'eau : sans cette couche, le lac
-// des Deux Montagnes et le lac Saint-Louis passent pour de la terre ferme,
-// et le fleuve disparaît entre l'île de Montréal et la Rive-Sud.
+// Les deux lacs sont nommés, donc Nominatim les connaît.
 const EAUX = [
   { nom: "Lac des Deux Montagnes", requete: "Lac des Deux Montagnes, Québec" },
   { nom: "Lac Saint-Louis", requete: "Lac Saint-Louis, Québec" },
@@ -208,29 +189,9 @@ const simplifie = (points, tolerance) => {
   ];
 };
 
-const contours = await Promise.all(
-  TERRITOIRES.map(async (territoire, rang) => {
-    // Nominatim demande une requête par seconde, pas davantage.
-    await new Promise((suite) => setTimeout(suite, rang * 1200));
-    const geojson = await cherche(
-      territoire.requete,
-      new Set(["boundary", "place"]),
-    );
-    return {
-      nom: territoire.nom,
-      ile: territoire.ile === true,
-      anneaux: anneauxExterieurs(geojson).map((anneau) =>
-        simplifie(anneau, TOLERANCE_DEGRES),
-      ),
-    };
-  }),
-);
-
 const eaux = await Promise.all(
   EAUX.map(async (plan, rang) => {
-    await new Promise((suite) =>
-      setTimeout(suite, (TERRITOIRES.length + rang) * 1200),
-    );
+    await new Promise((suite) => setTimeout(suite, rang * 1200));
     const geojson = await cherche(
       plan.requete,
       new Set(["natural", "water", "waterway"]),
@@ -253,7 +214,7 @@ eaux.push(...cours);
 
 const POINTS_MINIMUM = 8;
 
-for (const { nom, anneaux } of [...contours, ...eaux]) {
+for (const { nom, anneaux } of eaux) {
   const points = anneaux.reduce((total, anneau) => total + anneau.length, 0);
   if (points < POINTS_MINIMUM) {
     throw new Error(
@@ -284,6 +245,19 @@ const arrondi = (valeur) => Math.round(valeur * 10) / 10;
 // cadre : les garder, c'est alourdir la page pour des traits invisibles.
 const DEBORDEMENT = 40;
 
+// Un ruisseau de quelques dizaines de pixels au milieu des terres ne se lit
+// pas comme de l'eau : il se lit comme une rayure sur la carte.
+const SURFACE_MINIMALE = 5000;
+
+const assezGrand = (anneau) => {
+  const points = anneau.map(projette);
+  const xs = points.map(([x]) => x);
+  const ys = points.map(([, y]) => y);
+  const largeur = Math.max(...xs) - Math.min(...xs);
+  const hauteur_ = Math.max(...ys) - Math.min(...ys);
+  return largeur * hauteur_ >= SURFACE_MINIMALE;
+};
+
 const toucheLeCadre = (anneau) => {
   const points = anneau.map(projette);
   const xs = points.map(([x]) => x);
@@ -296,9 +270,11 @@ const toucheLeCadre = (anneau) => {
   );
 };
 
+const retenu = (anneau) => toucheLeCadre(anneau) && assezGrand(anneau);
+
 const versTrace = (anneaux) =>
   anneaux
-    .filter(toucheLeCadre)
+    .filter(retenu)
     .map((anneau) =>
       anneau
         .map(projette)
@@ -322,21 +298,10 @@ export const carteRegion = {
     aplatissement: ${aplatissement},
     echelle: ${echelle},
   },
-  // « ile » décide du tracé : une île s'érode pour élargir la rivière autour
-  // d'elle, la terre ferme se soude à ses voisines.
-  territoires: [
-${contours
-  .map(
-    ({ nom, ile, anneaux }) =>
-      `    {\n      nom: ${JSON.stringify(nom)},\n      ile: ${ile},\n      trace:\n        ${JSON.stringify(versTrace(anneaux))},\n    },`,
-  )
-  .join("\n")}
-  ],
-  // Dessinés par-dessus les rives : les limites de MRC englobent l'eau, donc
-  // sans eux les lacs passent pour de la terre ferme.
+  // Tout ce qui n'est pas dans cette liste est de la terre.
   eaux: [
 ${eaux
-  .filter(({ anneaux }) => anneaux.some(toucheLeCadre))
+  .filter(({ anneaux }) => anneaux.some(retenu))
   .map(
     ({ nom, anneaux }) =>
       `    {\n      nom: ${JSON.stringify(nom)},\n      trace:\n        ${JSON.stringify(versTrace(anneaux))},\n    },`,

@@ -2,12 +2,10 @@
 import { carteRegion } from "../data/contours";
 import { villesOuElleEnseigne } from "../data/site";
 
-// Contours OpenStreetMap figés par scripts/contours.mjs. Aucun trait sur les
-// terres : le contour foncé faisait tout le bruit de la carte, et il dessinait
-// des frontières administratives que personne ne voit sur le terrain. Sans
-// lui, les rives voisines fondent en une seule masse et il ne reste que le
-// dessin de l'eau — celui qu'on reconnaît.
-const { largeur, hauteur, projection, territoires, eaux } = carteRegion;
+// Contours OpenStreetMap figés par scripts/contours.mjs. On ne dessine que
+// l'eau : la terre, c'est le fond. Les îles se lisent par les rivières qui
+// les entourent, et il n'y a aucune frontière administrative à tenir à jour.
+const { largeur, hauteur, projection, eaux } = carteRegion;
 
 const projette = ({
   latitude,
@@ -58,18 +56,9 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
         sont {nomsDeVilles.join(", ")}.
       </desc>
 
-      <rect class="zone__eau" width={largeur} height={hauteur}></rect>
+      <rect class="zone__terre" width={largeur} height={hauteur}></rect>
 
-      {
-        territoires.map((territoire) => (
-          <path
-            class:list={["zone__terre", { "zone__terre--ile": territoire.ile }]}
-            d={territoire.trace}
-          />
-        ))
-      }
-
-      {eaux.map((plan) => <path class="zone__lac" d={plan.trace} />)}
+      {eaux.map((plan) => <path class="zone__eau" d={plan.trace} />)}
 
       {
         villes.map((ville) => (
@@ -124,29 +113,18 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     border-radius: var(--rayon);
   }
 
-  .zone__eau {
-    fill: #b6e3df;
-  }
-
   .zone__terre {
     fill: var(--sable);
-    /* Un liseré de la même couleur soude les rives voisines : simplifiées
-       chacune de leur côté, elles laissaient un cheveu d'eau entre elles. */
-    stroke: var(--sable);
-    stroke-width: 2;
-    stroke-linejoin: round;
   }
 
-  /* Une île, elle, s'érode : le liseré est de la couleur de l'eau, ce qui
-     élargit la rivière autour d'elle. À l'échelle de la région, la rivière
-     des Prairies fait un cheveu — et c'est elle qui fait lire les îles. */
-  .zone__terre--ile {
-    stroke: #b6e3df;
-    stroke-width: 7;
-  }
-
-  .zone__lac {
+  .zone__eau {
     fill: #b6e3df;
+    /* Le liseré élargit les cours d'eau : à l'échelle de la région, la
+       rivière des Prairies fait un cheveu — et c'est elle qui fait lire
+       l'île de Montréal. */
+    stroke: #b6e3df;
+    stroke-width: 4;
+    stroke-linejoin: round;
   }
 
   .zone__point {
