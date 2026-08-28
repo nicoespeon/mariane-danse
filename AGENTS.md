@@ -204,12 +204,26 @@ Ne pas revenir dessus sans raison explicite.
      « Roussillon (MRC) » rendait le **bâtiment** de la MRC, rue Saint-Pierre.
      Le script filtre sur `class=boundary` et refuse tout contour de moins de
      huit points.
-  4. Les cours d'eau **minuscules se lisent comme des rayures**, pas comme de
-     l'eau. En dessous de `SURFACE_MINIMALE`, ils sortent.
-  5. Le liseré des cours d'eau est **de la couleur de l'eau** : il les
+  4. **Toute l'eau n'est pas en relations** : la voie maritime, qui sépare
+     l'île de Montréal de la Rive-Sud, est une simple `way`. Et tout le monde
+     ne pose pas `natural=water` — certains ne mettent que `water=*`. Le
+     script interroge les deux, et pré-filtre les `way` sur leur boîte
+     englobante avant d'en réclamer la géométrie : il y en a plus de mille
+     dans le cadre, dont des mares de parc.
+  5. Un cours d'eau **isolé au milieu des terres** se lit comme une rayure,
+     pas comme de l'eau. Mais aucun **seuil de taille** ne sait le distinguer
+     d'un fragment minuscule qui fait la jonction entre deux plans d'eau —
+     les deux font une cinquantaine de pixels, et sans le second l'île se
+     soude à la rive. Le critère est donc la **connexité** : on part du plus
+     grand plan d'eau et on garde ce qui s'y raccroche de proche en proche.
+  6. Douglas-Peucker mesure les écarts au segment premier→dernier point. Sur
+     un **anneau fermé** ces deux points sont confondus, le segment est un
+     point, et l'algorithme rabote les lobes larges. On coupe l'anneau en deux
+     avant de le simplifier.
+  7. Le liseré des cours d'eau est **de la couleur de l'eau** : il les
      élargit. À cette échelle la rivière des Prairies fait un cheveu, et c'est
      elle qui fait lire l'île de Montréal.
-  6. Les noms de villes sont en **HTML par-dessus** le SVG, et n'apparaissent
+  8. Les noms de villes sont en **HTML par-dessus** le SVG, et n'apparaissent
      qu'au-delà de 25 rem de large (requête de conteneur, pas de média : la
      carte occupe toute la largeur sur téléphone et moins de la moitié sur
      grand écran). Le seuil se règle au pixel près — à 27 rem, un écran de

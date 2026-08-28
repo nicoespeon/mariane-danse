@@ -21,10 +21,7 @@ const milieux = [
   <div class="enveloppe">
     <h2>Où Mariane se déplace</h2>
     <p class="chapeau">Laval, Montréal et la Rive-Nord.</p>
-    <p class="precision">
-      La Rive-Nord, c'est grand. Pour situer&nbsp;: {villesRiveNord.join(", ")}
-      {" "}— et les villes voisines, à la même distance de route.
-    </p>
+    <p class="precision">{villesRiveNord.join(", ")}…</p>
 
     <div class="lieux">
       <CarteZone />
@@ -82,7 +79,8 @@ const milieux = [
 
   /* Ce que « Rive-Nord » veut dire, en toutes lettres : c'est sur ces noms-là
      qu'un coordonnateur cherche. Plus petit que le chapeau, il précise sans
-     prendre sa place. */
+     prendre sa place, et les points de suspension disent que la liste est
+     une poignée d'exemples, pas une frontière. */
   .precision {
     margin-top: -0.5rem;
     max-width: 60ch;
