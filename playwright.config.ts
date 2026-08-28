@@ -3,7 +3,11 @@ import { defineConfig, devices } from "@playwright/test";
 // On teste la sortie de production, pas le serveur de développement. Et on la
 // sert avec sirv plutôt qu'avec `astro preview` : celui-ci se démonise, donc
 // Playwright voit son processus mourir aussitôt et abandonne.
-const PORT = 4331;
+//
+// Port dédié, jamais réutilisé : sur celui de l'aperçu (4331), le panneau
+// navigateur intercale son proxy, et les requêtes d'API de Playwright
+// repartent avec « Parse Error: Expected HTTP/ ».
+const PORT = 4332;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -20,8 +24,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "pnpm run servir",
+    command: `pnpm exec sirv dist --port ${PORT} --quiet`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 });

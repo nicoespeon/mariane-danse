@@ -118,6 +118,9 @@ identiques en local et en CI.
 
 Les tests E2E servent `dist/` avec `sirv`, pas avec `astro preview` : ce dernier
 se démonise, donc Playwright voit son processus mourir aussitôt et abandonne.
+Ils ont leur propre port (4332), jamais celui de l'aperçu : le panneau
+navigateur intercale un proxy sur le sien, et les requêtes d'API de Playwright
+en reviennent avec « Parse Error: Expected HTTP/ ».
 Deux navigateurs, Chromium et WebKit — WebKit parce que Mariane montre le site
 depuis son téléphone, et que c'est Safari qui s'y exécute.
 
@@ -163,11 +166,23 @@ Ne pas revenir dessus sans raison explicite.
   d'utilisation de Google Maps. Pour ajouter une ville, il suffit de l'ajouter
   à `zonesDesservies` ; pour changer un territoire, on modifie `TERRITOIRES`
   dans le script et on le relance.
-  Deux pièges déjà payés : les frontières **administratives** englobent l'eau,
-  donc les rivières disparaissent et les îles ne se lisent plus — d'où
-  `place=island` pour Montréal et Laval. Et le nom des territoires est posé en
-  **HTML par-dessus** le SVG : à l'intérieur, il rétrécit avec la carte et
-  devient illisible sur téléphone.
+  Quatre pièges déjà payés :
+  1. Les frontières **administratives** englobent l'eau : les rivières
+     disparaissent et les îles ne se lisent plus. D'où `place=island` pour
+     Montréal, Laval et l'île Bizard, et une couche d'eau pour les lacs.
+  2. **Aucun contour** sur les terres. Le trait foncé faisait tout le bruit, et
+     il dessinait des limites de MRC que personne ne voit sur le terrain. Sans
+     lui, les rives voisines fondent en une seule masse et le cadre fixe rejette
+     leurs limites hors champ.
+  3. Le liseré des îles est **de la couleur de l'eau**, celui des rives de la
+     couleur de la terre : les premières s'érodent, ce qui élargit la rivière
+     des Prairies — un cheveu à cette échelle, mais c'est elle qui fait lire
+     l'île de Montréal. Les secondes se soudent entre elles.
+  4. Les noms sont en **HTML par-dessus** le SVG, et n'apparaissent qu'au-delà
+     de 27 rem de large (requête de conteneur, pas de média : la carte occupe
+     toute la largeur sur téléphone et moins de la moitié sur grand écran).
+     Six noms sur 275 px se marchent dessus ; en dessous, la légende prend le
+     relais.
 - **Pas de rayon de déplacement.** Il partait du domicile de Mariane, une
   information privée, et « 25 minutes autour de Laval » ne voulait rien dire —
   l'autre bout de Laval est déjà à 25 minutes. On nomme les territoires.

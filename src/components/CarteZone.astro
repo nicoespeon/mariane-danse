@@ -2,42 +2,39 @@
 import { carteRegion } from "../data/contours";
 import { zonesDesservies } from "../data/site";
 
-// Les contours viennent d'OpenStreetMap, figés par scripts/contours.mjs : on
-// reconnaît l'île de Montréal et l'île Jésus au premier coup d'œil, sans
-// dépendre d'une capture de Google Maps ni de ses conditions d'utilisation.
-const { largeur, hauteur, projection, territoires } = carteRegion;
+// Contours OpenStreetMap figés par scripts/contours.mjs. Aucun trait sur les
+// terres : le contour foncé faisait tout le bruit de la carte, et il dessinait
+// des frontières administratives que personne ne voit sur le terrain. Sans
+// lui, les rives voisines fondent en une seule masse et il ne reste que le
+// dessin de l'eau — celui qu'on reconnaît.
+const { largeur, hauteur, projection, territoires, eaux } = carteRegion;
 
-type Lieu = { latitude: number; longitude: number };
-
-const projette = ({ latitude, longitude }: Lieu) => ({
+const projette = ({
+  latitude,
+  longitude,
+}: {
+  latitude: number;
+  longitude: number;
+}) => ({
   x:
-    projection.marge +
     (longitude - projection.longitudeMin) *
-      projection.aplatissement *
-      projection.echelle,
-  y:
-    projection.marge + (projection.latitudeMax - latitude) * projection.echelle,
+    projection.aplatissement *
+    projection.echelle,
+  y: (projection.latitudeMax - latitude) * projection.echelle,
 });
 
-// En pourcentage, pour poser les étiquettes en HTML par-dessus le SVG : du
-// texte dans un SVG rétrécit avec lui et devient vite illisible.
-const enPourcentage = (lieu: Lieu) => {
-  const { x, y } = projette(lieu);
-  return { gauche: (x / largeur) * 100, haut: (y / hauteur) * 100 };
-};
-
-// Posées à la main sur une zone dégagée de chaque territoire : un centroïde
-// de forme concave tombe régulièrement dans l'eau.
-const etiquettes = [
-  { nom: "Rive-Nord", latitude: 45.757, longitude: -73.855 },
-  { nom: "Laval", latitude: 45.598, longitude: -73.742 },
-  { nom: "Montréal", latitude: 45.487, longitude: -73.68 },
-].map((etiquette) => ({ ...etiquette, ...enPourcentage(etiquette) }));
-
-const villes = zonesDesservies.map((ville) => ({
-  nom: ville.nom,
-  ...projette(ville),
-}));
+// Les étiquettes sont en HTML par-dessus le SVG : à l'intérieur, elles
+// rétréciraient avec la carte jusqu'à devenir illisibles sur téléphone.
+const villes = zonesDesservies.map((ville) => {
+  const { x, y } = projette(ville);
+  return {
+    nom: ville.nom,
+    x,
+    y,
+    gauche: (x / largeur) * 100,
+    haut: (y / hauteur) * 100,
+  };
+});
 
 const nomsDeVilles = villes.map((ville) => ville.nom);
 ---
@@ -49,10 +46,10 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
       role="img"
       aria-labelledby="zone-titre zone-detail"
     >
-      <title id="zone-titre">Carte des territoires où Mariane se déplace</title>
+      <title id="zone-titre">Carte des villes où Mariane se déplace</title>
       <desc id="zone-detail">
-        Laval, l'île de Montréal et la Rive-Nord sont mises en évidence. Les
-        villes marquées d'un point sont {nomsDeVilles.join(", ")}.
+        Autour de l'île de Montréal et de Laval, les villes marquées d'un point
+        sont {nomsDeVilles.join(", ")}.
       </desc>
 
       <rect class="zone__eau" width={largeur} height={hauteur}></rect>
@@ -60,37 +57,40 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
       {
         territoires.map((territoire) => (
           <path
-            class:list={[
-              "zone__terre",
-              { "zone__terre--desservie": territoire.desservi },
-            ]}
+            class:list={["zone__terre", { "zone__terre--ile": territoire.ile }]}
             d={territoire.trace}
           />
         ))
       }
 
+      {eaux.map((plan) => <path class="zone__lac" d={plan.trace} />)}
+
       {
         villes.map((ville) => (
-          <circle class="zone__point" cx={ville.x} cy={ville.y} r="8" />
+          <circle class="zone__point" cx={ville.x} cy={ville.y} r="9" />
         ))
       }
     </svg>
 
     {
-      etiquettes.map((etiquette) => (
+      villes.map((ville) => (
         <span
-          class="zone__territoire"
-          style={`left: ${etiquette.gauche}%; top: ${etiquette.haut}%`}
+          class="zone__nom"
+          style={`left: ${ville.gauche}%; top: ${ville.haut}%`}
           aria-hidden="true"
         >
-          {etiquette.nom}
+          {ville.nom}
         </span>
       ))
     }
   </div>
 
+  <ul class="zone__legende">
+    {villes.map((ville) => <li>{ville.nom}</li>)}
+  </ul>
+
   <figcaption>
-    Villes desservies&nbsp;: {nomsDeVilles.join(", ")}. Fonds de carte{" "}
+    Fonds de carte{" "}
     <a href="https://www.openstreetmap.org/copyright" rel="noopener">
       © les contributeurs d'OpenStreetMap
     </a>.
@@ -106,6 +106,10 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
 
   .zone__cadre {
     position: relative;
+    /* La taille des étiquettes se règle sur la carte, pas sur la fenêtre :
+       la carte occupe toute la largeur sur téléphone mais moins de la moitié
+       sur grand écran, donc une requête de média dirait n'importe quoi. */
+    container-type: inline-size;
   }
 
   .zone svg {
@@ -115,14 +119,28 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
   }
 
   .zone__eau {
-    fill: var(--mer-brume);
+    fill: #b6e3df;
   }
 
   .zone__terre {
     fill: var(--sable);
-    stroke: var(--mer);
-    stroke-width: 2.5;
+    /* Un liseré de la même couleur soude les rives voisines : simplifiées
+       chacune de leur côté, elles laissaient un cheveu d'eau entre elles. */
+    stroke: var(--sable);
+    stroke-width: 2;
     stroke-linejoin: round;
+  }
+
+  /* Une île, elle, s'érode : le liseré est de la couleur de l'eau, ce qui
+     élargit la rivière autour d'elle. À l'échelle de la région, la rivière
+     des Prairies fait un cheveu — et c'est elle qui fait lire les îles. */
+  .zone__terre--ile {
+    stroke: #b6e3df;
+    stroke-width: 7;
+  }
+
+  .zone__lac {
+    fill: #b6e3df;
   }
 
   .zone__point {
@@ -131,17 +149,55 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     stroke-width: 3;
   }
 
-  .zone__territoire {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--mer-sombre);
-    white-space: nowrap;
-    /* Le halo garde le nom lisible même s'il passe sur une côte */
-    text-shadow:
-      0 0 4px var(--sable),
-      0 0 8px var(--sable);
+  /* Six noms sur une carte de 275 px se marchent dessus, quelle que soit la
+     mise en page. En dessous du seuil, la légende prend le relais — c'est ce
+     que fait n'importe quelle carte quand on dézoome. */
+  .zone__nom {
+    display: none;
+  }
+
+  @container (min-width: 27rem) {
+    .zone__nom {
+      position: absolute;
+      display: block;
+      /* Sous le point, centrée : pas de décision gauche/droite à prendre, et
+         aucune étiquette ne recouvre son propre repère. */
+      transform: translate(-50%, 0.5rem);
+      font-size: clamp(0.85rem, 2.3cqw, 1rem);
+      font-weight: 700;
+      color: var(--encre);
+      white-space: nowrap;
+      text-shadow:
+        0 0 4px var(--sable),
+        0 0 8px var(--sable),
+        0 0 12px var(--sable);
+    }
+  }
+
+  .zone__legende {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .zone__legende li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .zone__legende li::before {
+    content: "";
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 999px;
+    background: var(--soleil-vif);
   }
 
   .zone figcaption {

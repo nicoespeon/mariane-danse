@@ -9,31 +9,46 @@ const AGENT = "mariane-danse-site/1.0 (nicolascarlo.espeon@gmail.com)";
 
 // Les frontières administratives englobent l'eau : dessinées telles quelles,
 // les rivières disparaissent et les îles ne se lisent plus. On prend donc les
-// vraies îles (place=island) et, pour la Rive-Nord, les MRC — leur limite sud
-// s'arrête au milieu de la rivière, ce qui laisse voir le cours d'eau.
-// L'ordre est celui du tracé : la terre ferme d'abord, les îles par-dessus.
+// vraies îles (place=island), et on complète les rives avec les MRC voisines.
+//
+// Ces MRC ont des limites administratives arbitraires — personne ne « voit »
+// la frontière de Thérèse-De Blainville. Deux choses les effacent : le cadre
+// fixe ci-dessous, qui rejette ces limites hors champ, et l'absence de
+// contour au tracé, qui fond les terres voisines en une seule masse.
 const TERRITOIRES = [
-  {
-    nom: "Rive-Nord",
-    requete: "Thérèse-De Blainville, Québec",
-    desservi: true,
-  },
-  {
-    nom: "Deux-Montagnes",
-    requete: "Deux-Montagnes (MRC), Québec, Canada",
-    desservi: true,
-  },
-  { nom: "Laval", requete: "Île Jésus, Laval", desservi: true },
-  { nom: "Montréal", requete: "Île de Montréal", desservi: true },
-  { nom: "Île Bizard", requete: "Île Bizard", desservi: true },
+  { nom: "Deux-Montagnes", requete: "Deux-Montagnes (MRC), Québec, Canada" },
+  { nom: "Thérèse-De Blainville", requete: "Thérèse-De Blainville, Québec" },
+  { nom: "Les Moulins", requete: "Les Moulins, Québec, Canada" },
+  { nom: "L'Assomption", requete: "L'Assomption (MRC), Québec, Canada" },
+  { nom: "Vaudreuil-Soulanges", requete: "Vaudreuil-Soulanges, Québec" },
+  { nom: "Roussillon", requete: "Roussillon (MRC), Québec, Canada" },
+  { nom: "Longueuil", requete: "Agglomération de Longueuil" },
+  { nom: "Laval", requete: "Île Jésus, Laval", ile: true },
+  { nom: "Montréal", requete: "Île de Montréal", ile: true },
+  { nom: "Île Bizard", requete: "Île Bizard", ile: true },
 ];
 
+// Les limites de MRC englobent les plans d'eau : sans cette couche, le lac
+// des Deux Montagnes et le lac Saint-Louis passent pour de la terre ferme.
+const EAUX = [
+  { nom: "Lac des Deux Montagnes", requete: "Lac des Deux Montagnes, Québec" },
+  { nom: "Lac Saint-Louis", requete: "Lac Saint-Louis, Québec" },
+];
+
+// Cadre choisi à la main plutôt que déduit des formes : il tient l'île de
+// Montréal entière — c'est elle qu'on reconnaît — et coupe le reste au bord.
+const CADRE = {
+  longitudeMin: -74.05,
+  longitudeMax: -73.42,
+  latitudeMin: 45.38,
+  latitudeMax: 45.72,
+};
+
 const LARGEUR = 800;
-// Un peu d'eau tout autour : sans marge, l'île de Montréal touche le bord.
-const MARGE = 24;
-// Sous ce seuil, un point n'apporte plus rien à la silhouette : à cette
-// échelle, un dixième de millième de degré vaut à peu près un pixel.
-const TOLERANCE_DEGRES = 0.0007;
+
+// Sous ce seuil, un point n'apporte plus rien à la silhouette. Volontairement
+// grossier : c'est le détail des côtes qui rendait la carte bruyante.
+const TOLERANCE_DEGRES = 0.0012;
 
 const cherche = async (requete) => {
   const url = new URL("https://nominatim.openstreetmap.org/search");
@@ -99,7 +114,8 @@ const contours = await Promise.all(
     await new Promise((suite) => setTimeout(suite, rang * 1200));
     const geojson = await cherche(territoire.requete);
     return {
-      ...territoire,
+      nom: territoire.nom,
+      ile: territoire.ile === true,
       anneaux: anneauxExterieurs(geojson).map((anneau) =>
         simplifie(anneau, TOLERANCE_DEGRES),
       ),
@@ -107,31 +123,36 @@ const contours = await Promise.all(
   }),
 );
 
-const tousLesPoints = contours.flatMap(({ anneaux }) => anneaux.flat());
-const longitudes = tousLesPoints.map(([longitude]) => longitude);
-const latitudes = tousLesPoints.map(([, latitude]) => latitude);
+const eaux = await Promise.all(
+  EAUX.map(async (plan, rang) => {
+    await new Promise((suite) =>
+      setTimeout(suite, (TERRITOIRES.length + rang) * 1200),
+    );
+    const geojson = await cherche(plan.requete);
+    return {
+      nom: plan.nom,
+      // Un lac n'a aucun détail utile à cette échelle, et celui des Deux
+      // Montagnes arrive avec vingt mille points.
+      anneaux: anneauxExterieurs(geojson).map((anneau) =>
+        simplifie(anneau, TOLERANCE_DEGRES * 3),
+      ),
+    };
+  }),
+);
 
-const cadre = {
-  longitudeMin: Math.min(...longitudes),
-  longitudeMax: Math.max(...longitudes),
-  latitudeMin: Math.min(...latitudes),
-  latitudeMax: Math.max(...latitudes),
-};
+const cadre = CADRE;
 const latitudeCentrale = (cadre.latitudeMin + cadre.latitudeMax) / 2;
 
 // À cette latitude un degré de longitude est bien plus court qu'un degré de
 // latitude : sans ce facteur, la région paraîtrait étirée d'est en ouest.
 const aplatissement = Math.cos((latitudeCentrale * Math.PI) / 180);
 const echelle =
-  (LARGEUR - 2 * MARGE) /
-  ((cadre.longitudeMax - cadre.longitudeMin) * aplatissement);
-const hauteur = Math.round(
-  (cadre.latitudeMax - cadre.latitudeMin) * echelle + 2 * MARGE,
-);
+  LARGEUR / ((cadre.longitudeMax - cadre.longitudeMin) * aplatissement);
+const hauteur = Math.round((cadre.latitudeMax - cadre.latitudeMin) * echelle);
 
 const projette = ([longitude, latitude]) => [
-  MARGE + (longitude - cadre.longitudeMin) * aplatissement * echelle,
-  MARGE + (cadre.latitudeMax - latitude) * echelle,
+  (longitude - cadre.longitudeMin) * aplatissement * echelle,
+  (cadre.latitudeMax - latitude) * echelle,
 ];
 
 const arrondi = (valeur) => Math.round(valeur * 10) / 10;
@@ -160,13 +181,24 @@ export const carteRegion = {
     latitudeMax: ${cadre.latitudeMax},
     aplatissement: ${aplatissement},
     echelle: ${echelle},
-    marge: ${MARGE},
   },
+  // « ile » décide du tracé : une île s'érode pour élargir la rivière autour
+  // d'elle, la terre ferme se soude à ses voisines.
   territoires: [
 ${contours
   .map(
-    ({ nom, desservi, anneaux }) =>
-      `    {\n      nom: ${JSON.stringify(nom)},\n      desservi: ${desservi},\n      trace:\n        ${JSON.stringify(versTrace(anneaux))},\n    },`,
+    ({ nom, ile, anneaux }) =>
+      `    {\n      nom: ${JSON.stringify(nom)},\n      ile: ${ile},\n      trace:\n        ${JSON.stringify(versTrace(anneaux))},\n    },`,
+  )
+  .join("\n")}
+  ],
+  // Dessinés par-dessus les rives : les limites de MRC englobent l'eau, donc
+  // sans eux les lacs passent pour de la terre ferme.
+  eaux: [
+${eaux
+  .map(
+    ({ nom, anneaux }) =>
+      `    {\n      nom: ${JSON.stringify(nom)},\n      trace:\n        ${JSON.stringify(versTrace(anneaux))},\n    },`,
   )
   .join("\n")}
   ],
