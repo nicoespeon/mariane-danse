@@ -2,6 +2,10 @@
 import Base from "../layouts/Base.astro";
 import Pied from "../components/Pied.astro";
 import { site } from "../data/site";
+
+// Sans clé, le formulaire ne s'affiche pas : cette page ne doit pas décrire
+// un relais qui n'existe alors nulle part sur le site.
+const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 ---
 
 <Base
@@ -19,19 +23,34 @@ import { site } from "../data/site";
       données, ni compte, ni témoin de connexion (cookie) de suivi.
     </p>
 
-    <h2>Le formulaire de contact</h2>
-    <p>
-      Quand vous envoyez le formulaire, votre nom, votre courriel et votre
-      message sont acheminés par le service Web3Forms directement vers la boîte
-      courriel de Mariane. Ce service agit uniquement comme relais d'envoi et ne
-      conserve pas le contenu des messages.
-    </p>
-    <p>
-      Ce relais est situé à l'extérieur du Québec. Vos renseignements y
-      transitent donc brièvement avant d'arriver dans la boîte de Mariane. Si
-      vous préférez l'éviter, écrivez directement à{" "}
-      <a href={`mailto:${site.courriel}`}>{site.courriel}</a>.
-    </p>
+    {
+      cleWeb3Forms ? (
+        <>
+          <h2>Le formulaire de contact</h2>
+          <p>
+            Quand vous envoyez le formulaire, votre nom, votre courriel et votre
+            message sont acheminés par le service Web3Forms directement vers la
+            boîte courriel de Mariane. Ce service agit uniquement comme relais
+            d'envoi et ne conserve pas le contenu des messages.
+          </p>
+          <p>
+            Ce relais est situé à l'extérieur du Québec. Vos renseignements y
+            transitent donc brièvement avant d'arriver dans la boîte de Mariane.
+            Si vous préférez l'éviter, écrivez directement à{" "}
+            <a href={`mailto:${site.courriel}`}>{site.courriel}</a>.
+          </p>
+        </>
+      ) : (
+        <>
+          <h2>Quand vous écrivez à Mariane</h2>
+          <p>
+            Les liens de contact ouvrent votre logiciel de courriel&nbsp;: le
+            message part de chez vous et arrive chez elle. Ce site ne le voit
+            jamais passer.
+          </p>
+        </>
+      )
+    }
 
     <h2>Ce que Mariane en fait</h2>
     <p>

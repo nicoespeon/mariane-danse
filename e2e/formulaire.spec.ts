@@ -1,67 +1,88 @@
 import { test, expect } from "@playwright/test";
 
 // Le formulaire n'est jamais envoyé pour de vrai : la cible est la boîte de
-// Mariane. On vérifie donc son contrat — ce que le navigateur enverrait — et
-// le repli en `mailto:` quand aucune clé Web3Forms n'est configurée.
+// Mariane. On vérifie son contrat — ce que le navigateur enverrait.
+//
+// Sans clé Web3Forms configurée, il ne s'affiche pas : un formulaire qui
+// poste vers `mailto:` ne fait rien dans Chrome ni Safari, et les tests
+// tournent justement sans clé. D'où un invariant qui vaut dans les deux cas,
+// puis des vérifications qui ne s'appliquent que si le formulaire est là.
+const ACTION_ATTENDUE = "https://api.web3forms.com/submit";
+
 test.describe("formulaire de contact", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
 
-  test("expose trois champs obligatoires et étiquetés", async ({ page }) => {
-    const formulaire = page.locator("form.formulaire");
-
-    for (const etiquette of ["Votre nom", "Votre courriel", "Votre message"]) {
-      const champ = formulaire.getByLabel(etiquette);
-      await expect(champ, `champ « ${etiquette} »`).toBeVisible();
-      await expect(champ, `champ « ${etiquette} »`).toHaveAttribute(
-        "required",
-        "",
+  test("ne montre jamais un formulaire qui n'aboutit nulle part", async ({
+    page,
+  }) => {
+    const cibles = await page
+      .locator("form")
+      .evaluateAll((formulaires) =>
+        formulaires.map((formulaire) => formulaire.getAttribute("action")),
       );
-    }
+
+    expect(cibles.filter((cible) => cible !== ACTION_ATTENDUE)).toEqual([]);
   });
 
-  test("part vers Web3Forms, ou retombe sur un courriel", async ({ page }) => {
-    const action = await page.locator("form.formulaire").getAttribute("action");
+  test("laisse toujours une autre façon de joindre Mariane", async ({
+    page,
+  }) => {
+    const contact = page.locator("#contact");
 
-    expect(action).toMatch(/^(https:\/\/api\.web3forms\.com\/submit|mailto:)/);
+    await expect(contact.locator(".intention")).toHaveCount(3);
+    await expect(contact.locator("a[href^='tel:']")).toBeVisible();
   });
 
-  test("cache son piège à robots aux humains", async ({ page }) => {
-    const piege = page.locator("form.formulaire input[name='botcheck']");
+  test.describe("quand la clé Web3Forms est configurée", () => {
+    test.beforeEach(async ({ page }) => {
+      const present = await page.locator("form.formulaire").count();
+      test.skip(present === 0, "aucune clé Web3Forms dans cet environnement");
+    });
 
-    await expect(piege).toBeAttached();
-    await expect(piege).toHaveAttribute("tabindex", "-1");
-    await expect(piege).toHaveAttribute("aria-hidden", "true");
+    test("expose trois champs obligatoires et étiquetés", async ({ page }) => {
+      const formulaire = page.locator("form.formulaire");
 
-    const boite = (await piege.boundingBox()) ?? { width: 0, height: 0 };
-    expect(Math.max(boite.width, boite.height)).toBeLessThanOrEqual(1);
-  });
+      for (const etiquette of [
+        "Votre nom",
+        "Votre courriel",
+        "Votre message",
+      ]) {
+        const champ = formulaire.getByLabel(etiquette);
+        await expect(champ, `champ « ${etiquette} »`).toBeVisible();
+        await expect(champ, `champ « ${etiquette} »`).toHaveAttribute(
+          "required",
+          "",
+        );
+      }
+    });
 
-  test("annonce où partent les coordonnées", async ({ page }) => {
-    const mention = page.locator(".formulaire__mention");
+    test("porte la clé qui autorise l'envoi", async ({ page }) => {
+      const cle = page.locator("form.formulaire input[name='access_key']");
 
-    await expect(mention).toContainText("courriel");
-    await expect(mention.locator("a[href='/confidentialite/']")).toBeVisible();
-  });
+      await expect(cle).toBeAttached();
+      await expect(cle).not.toHaveValue("");
+    });
 
-  test("accepte une saisie complète sans rien bloquer", async ({ page }) => {
-    const formulaire = page.locator("form.formulaire");
+    test("cache son piège à robots aux humains", async ({ page }) => {
+      const piege = page.locator("form.formulaire input[name='botcheck']");
 
-    await formulaire.getByLabel("Votre nom").fill("Chantal Tremblay");
-    await formulaire
-      .getByLabel("Votre courriel")
-      .fill("chantal@residence-exemple.ca");
-    await formulaire
-      .getByLabel("Votre message")
-      .fill("Bonjour, nous cherchons un cours hebdomadaire.");
+      await expect(piege).toBeAttached();
+      await expect(piege).toHaveAttribute("tabindex", "-1");
+      await expect(piege).toHaveAttribute("aria-hidden", "true");
 
-    // `checkValidity` dit ce que le navigateur ferait au clic sur Envoyer,
-    // sans envoyer quoi que ce soit.
-    expect(
-      await formulaire.evaluate((element: HTMLFormElement) =>
-        element.checkValidity(),
-      ),
-    ).toBe(true);
+      const boite = (await piege.boundingBox()) ?? { width: 0, height: 0 };
+      expect(Math.max(boite.width, boite.height)).toBeLessThanOrEqual(1);
+    });
+
+    test("annonce où vont les coordonnées", async ({ page }) => {
+      const mention = page.locator(".formulaire__mention");
+
+      await expect(mention).toContainText("courriel");
+      await expect(
+        mention.locator("a[href='/confidentialite/']"),
+      ).toBeVisible();
+    });
   });
 });

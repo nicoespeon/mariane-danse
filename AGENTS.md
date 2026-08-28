@@ -153,8 +153,14 @@ Ne pas revenir dessus sans raison explicite.
 - **Astro**, pour la sortie statique et l'optimisation d'images au build.
 - **Cloudflare Pages**, pour les préversions par pull request — c'est ce qui
   permet de valider un changement sur une vraie URL avant qu'il touche la prod.
-- **Web3Forms** pour le formulaire : un POST HTML sans JavaScript. Sans clé
-  configurée, le formulaire retombe sur un `mailto:` — il n'est jamais cassé.
+- **Web3Forms** pour le formulaire : un POST HTML sans JavaScript. C'est le
+  seul chemin de contact qui ne suppose rien chez le visiteur — un `mailto:`
+  reste muet pour qui lit son courriel dans un navigateur.
+  Sans clé configurée, le formulaire **ne s'affiche pas** : posté vers
+  `mailto:`, il ne faisait rien dans Chrome ni Safari, et un bouton
+  « Envoyer » qui n'envoie rien est pire que pas de bouton. La page
+  `/confidentialite` suit la même bascule, pour ne pas décrire un relais
+  absent. Les courriels par intention, eux, restent là dans tous les cas.
 - **Courriels pré-remplis par intention** plutôt qu'un champ vide : le visiteur
   choisit qui il est, le message s'écrit tout seul, il n'a plus qu'à envoyer.
 - **Une seule page** plus `/carte` et `/confidentialite`. Pas de menu à tiroirs.

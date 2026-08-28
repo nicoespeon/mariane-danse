@@ -57,8 +57,11 @@ Merci d'avance,`,
 const lienCourriel = ({ objet, corps }: { objet: string; corps: string }) =>
   `mailto:${site.courriel}?subject=${encodeURIComponent(objet)}&body=${encodeURIComponent(corps)}`;
 
-// Clé publique par conception (elle n'autorise que l'envoi vers la boîte de
-// Mariane). Absente, le formulaire retombe sur un simple courriel.
+// Clé publique par conception : elle n'autorise que l'envoi vers la boîte de
+// Mariane. Sans elle, le formulaire ne s'affiche pas du tout — un formulaire
+// qui poste vers `mailto:` ne fait rien dans Chrome ni Safari, et un bouton
+// « Envoyer » qui ne fait rien est pire que pas de bouton. Les courriels par
+// intention, eux, restent là dans tous les cas.
 const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 ---
 
@@ -108,64 +111,70 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
       </ul>
     </div>
 
-    <form
-      class="formulaire"
-      method="POST"
-      action={cleWeb3Forms
-        ? "https://api.web3forms.com/submit"
-        : `mailto:${site.courriel}`}
-    >
-      {
-        cleWeb3Forms && (
+    {
+      cleWeb3Forms && (
+        <form
+          class="formulaire"
+          method="POST"
+          action="https://api.web3forms.com/submit"
+        >
           <input type="hidden" name="access_key" value={cleWeb3Forms} />
-        )
-      }
-      <input
-        type="hidden"
-        name="subject"
-        value="Nouveau message depuis le site"
-      />
-      {/* Piège à robots : un humain ne remplit jamais ce champ */}
-      <input
-        type="checkbox"
-        name="botcheck"
-        class="visuellement-cache"
-        tabindex="-1"
-        aria-hidden="true"
-        autocomplete="off"
-      />
+          <input
+            type="hidden"
+            name="subject"
+            value="Nouveau message depuis le site"
+          />
+          {/* Piège à robots : un humain ne remplit jamais ce champ */}
+          <input
+            type="checkbox"
+            name="botcheck"
+            class="visuellement-cache"
+            tabindex="-1"
+            aria-hidden="true"
+            autocomplete="off"
+          />
 
-      <h3>Ou écrivez-moi directement</h3>
+          <h3>Ou écrivez-moi directement</h3>
 
-      <p class="champ">
-        <label for="nom">Votre nom</label>
-        <input id="nom" name="nom" type="text" required autocomplete="name" />
-      </p>
+          <p class="champ">
+            <label for="nom">Votre nom</label>
+            <input
+              id="nom"
+              name="nom"
+              type="text"
+              required
+              autocomplete="name"
+            />
+          </p>
 
-      <p class="champ">
-        <label for="courriel">Votre courriel</label>
-        <input
-          id="courriel"
-          name="courriel"
-          type="email"
-          required
-          autocomplete="email"
-        />
-      </p>
+          <p class="champ">
+            <label for="courriel">Votre courriel</label>
+            <input
+              id="courriel"
+              name="courriel"
+              type="email"
+              required
+              autocomplete="email"
+            />
+          </p>
 
-      <p class="champ">
-        <label for="message">Votre message</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
-      </p>
+          <p class="champ">
+            <label for="message">Votre message</label>
+            <textarea id="message" name="message" rows="5" required />
+          </p>
 
-      <button class="bouton bouton--principal" type="submit">Envoyer</button>
+          <button class="bouton bouton--principal" type="submit">
+            Envoyer
+          </button>
 
-      <p class="formulaire__mention">
-        Vos coordonnées sont transmises par courriel à Mariane. Elles ne sont ni
-        conservées sur ce site, ni partagées.{" "}
-        <a href="/confidentialite/">En savoir plus</a>
-      </p>
-    </form>
+          <p class="formulaire__mention">
+            Vos coordonnées sont transmises par courriel à Mariane. Elles ne
+            sont ni conservées sur ce site, ni partagées.{" "}
+            <a href="/confidentialite/">En savoir plus</a>
+          </p>
+        </form>
+      )
+    }
   </div>
 </section>
 
@@ -178,7 +187,7 @@ const cleWeb3Forms = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 
   @media (min-width: 56rem) {
     .contact {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
     }
   }
 
