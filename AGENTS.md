@@ -126,7 +126,16 @@ depuis son téléphone, et que c'est Safari qui s'y exécute.
 Le panneau navigateur démarre le serveur via `.claude/launch.json` :
 `preview_start` avec `{"name": "site"}`, depuis la racine du dépôt.
 
-Une bizarrerie à connaître : **une capture d'écran après un défilement revient
+**Le serveur de développement sert du CSS périmé.** Modifier un bloc `<style>`
+d'un composant met à jour le HTML mais pas toujours la feuille de style : on
+voit alors une version à moitié appliquée, et on part corriger un bug qui
+n'existe pas. C'est arrivé deux fois. Pour juger un rendu, servir le build :
+
+```bash
+pnpm build && pnpm servir     # ou preview_start avec {"name": "apercu"}
+```
+
+Une autre bizarrerie : **une capture d'écran après un défilement revient
 vide.** Le panneau ne repeint que sur navigation ou sur changement du DOM. Pour
 voir une section basse, agrandir la fenêtre à la hauteur de la page entière
 (`resize_window` en 1200 × 6900, par exemple) puis naviguer — la page tient dans

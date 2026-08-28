@@ -48,7 +48,9 @@ const emplacements = [
           href={`https://instagram.com/${site.instagram.handle}`}
           rel="me noopener"
         >
-          <IconeInstagram taille="2rem" />
+          <span class="instagram__logo">
+            <IconeInstagram taille="2rem" degrade={true} />
+          </span>
           <span class="instagram__texte">
             <strong>Ses vidéos, semaine après semaine</strong>
             <span>@{site.instagram.handle} sur Instagram</span>
@@ -68,12 +70,11 @@ const emplacements = [
   }
 
   .instagram {
-    margin-top: 2rem;
+    margin-top: 3rem;
     display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    min-height: 3.25rem;
-    padding: 1rem 1.75rem;
+    gap: 1.25rem;
+    padding: 1.25rem 2rem 1.25rem 1.25rem;
     border-radius: var(--rayon-large);
     background: var(--mer-sombre);
     color: var(--sable);
@@ -90,10 +91,25 @@ const emplacements = [
     box-shadow: var(--ombre-levee);
   }
 
+  /* Le blanc laisse le dégradé d'Instagram exister pour ce qu'il est, au
+     lieu de le noyer dans le vert du bloc. */
+  .instagram__logo {
+    display: grid;
+    place-items: center;
+    padding: 0.75rem;
+    border-radius: var(--rayon);
+    background: #fff;
+  }
+
   .instagram__texte {
     display: grid;
+    gap: 0.15rem;
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+
+  .instagram__texte strong {
+    font-size: 1.1rem;
   }
 
   .instagram__texte span {
