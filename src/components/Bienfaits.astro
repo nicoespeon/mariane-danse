@@ -6,24 +6,24 @@ import { licence } from "../data/site";
 // justifier auprès de leur direction, pas ce qui fait rêver le grand public.
 const arguments_ = [
   {
-    titre: "Une activité que les résidents réclament",
+    titre: "Les gens viennent pour la musique",
     texte:
-      "La musique fait le travail. Les participants reviennent d'eux-mêmes, semaine après semaine, sans qu'il faille les convaincre.",
+      "Salsa, merengue, cumbia. Vous n'aurez pas à cogner aux portes\u00a0: c'est la musique qui fait sortir les gens de leur chambre.",
   },
   {
-    titre: "De la mobilité, pas de la performance",
+    titre: "Le cours se danse aussi assis",
     texte:
-      "Chaque mouvement a sa variante assise. Personne n'est mis de côté à cause d'une hanche, d'un déambulateur ou d'un mauvais jour.",
+      "Chaque mouvement a sa variante assise. Une hanche qui bloque, un déambulateur\u00a0: la personne danse quand même, avec le groupe.",
   },
   {
-    titre: "Zéro logistique de votre côté",
+    titre: "Vous fournissez la salle et les chaises",
     texte:
-      "Mariane arrive avec sa musique et son matériel. Il suffit d'une salle commune et de chaises.",
+      "Elle apporte la musique et le matériel. Vous n'avez rien à installer, rien à louer.",
   },
   {
-    titre: "Une intervenante qualifiée",
+    titre: "Elle sait tenir un groupe",
     texte:
-      "Licence Zumba® et Zumba Gold® à jour, vérifiable en ligne. Et de la danse bien avant la Zumba\u00a0: tenir un groupe, ça ne s'improvise pas.",
+      "Licences Zumba® et Zumba Gold® à jour, vérifiables en ligne. Sentir quand un groupe fatigue et le relancer, ça vient de ses années de danse.",
   },
 ];
 ---
@@ -35,7 +35,7 @@ const arguments_ = [
   <div class="enveloppe">
     <h2>Pourquoi les organismes la rappellent</h2>
     <p class="chapeau">
-      Ce que ça change concrètement pour vos participants — et pour vous.
+      Ce que ça donne dans votre salle, et ce que ça vous demande.
     </p>
 
     <ul class="arguments">
@@ -52,7 +52,7 @@ const arguments_ = [
     <p class="licence">
       Membre licenciée du <strong>Zumba Instructor Network</strong>, ZIN n<sup
         >o</sup
-      >&nbsp;{licence.zinId} — {licence.intitules.join(" et ")}.{" "}
+      >&nbsp;{licence.zinId} ({licence.intitules.join(" et ")}).{" "}
       <a href={licence.profil} rel="noopener">Voir sa fiche sur zumba.com</a>.
     </p>
   </div>
