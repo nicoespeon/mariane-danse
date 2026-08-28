@@ -6,6 +6,12 @@ export const GET: APIRoute = ({ site: origine }) => {
   const [prenom, ...restePrenom] = site.nom.split(" ");
   const nomFamille = restePrenom.join(" ");
 
+  const nomDuFichier = `${site.nom
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/\s+/gu, "-")}.vcf`;
+
   const carte = [
     "BEGIN:VCARD",
     "VERSION:3.0",
@@ -24,7 +30,7 @@ export const GET: APIRoute = ({ site: origine }) => {
   return new Response(carte, {
     headers: {
       "Content-Type": "text/vcard; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="mariane-rollot-carlo.vcf"',
+      "Content-Disposition": `attachment; filename="${nomDuFichier}"`,
     },
   });
 };

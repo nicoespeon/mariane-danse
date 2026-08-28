@@ -22,6 +22,19 @@ const fautes = [
     explique: () =>
       "espace ordinaire dans des guillemets (il faut une insécable)",
   },
+  // Astro mange l'espace entre une expression et l'élément qui suit. Le
+  // résultat — « Zumba Gold®.Vérifiable » — ne se voit qu'à la relecture.
+  {
+    motif: /[.!?…]\p{Lu}/gu,
+    explique: (collision) =>
+      `ponctuation collée au mot suivant : « ${collision} »`,
+  },
+  {
+    // mailto: et https: sont les seuls deux-points légitimement collés
+    motif: /(?<!https?|mailto|tel)[,;:]\p{L}/gu,
+    explique: (collision) =>
+      `ponctuation collée au mot suivant : « ${collision} »`,
+  },
 ];
 
 const fichiersHtml = async (dossier) => {
@@ -37,13 +50,41 @@ const fichiersHtml = async (dossier) => {
 };
 
 // Le CSS et le JavaScript embarqués sont pleins de « ; » : ils ne sont pas du
-// texte, ils sortent avant l'analyse.
+// texte, ils sortent avant l'analyse. Les entités, elles, doivent être
+// décodées : sans ça, chaque « d&#39;une » ressemble à une faute.
+const ENTITES = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: "\u00a0",
+  laquo: "«",
+  raquo: "»",
+  hellip: "…",
+};
+
+const decode = (texte) =>
+  texte.replace(/&(#\d+|#x[\da-f]+|\w+);/giu, (entier, corps) => {
+    if (corps.startsWith("#x") || corps.startsWith("#X"))
+      return String.fromCodePoint(Number.parseInt(corps.slice(2), 16));
+    if (corps.startsWith("#"))
+      return String.fromCodePoint(Number.parseInt(corps.slice(1), 10));
+    return ENTITES[corps.toLowerCase()] ?? entier;
+  });
+
+// Une balise en ligne disparaît sans laisser d'espace, un bloc en laisse une.
+// C'est toute la différence entre « Gold®.<a>Voir » — la faute qu'on cherche —
+// et « …groupe.</p><p>Le plus rapide », qui est correct.
+const EN_LIGNE =
+  /^<\/?(a|abbr|b|code|em|i|mark|s|small|span|strong|sub|sup|time|u)\b/iu;
+
 const texteVisible = (html) =>
-  html
-    .replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gu, " ")
-    .replace(/<[^>]+>/gu, " ")
-    .replace(/&nbsp;/gu, " ")
-    .replace(/&#160;/gu, " ");
+  decode(
+    html
+      .replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gu, " ")
+      .replace(/<[^>]+>/gu, (balise) => (EN_LIGNE.test(balise) ? "" : " ")),
+  );
 
 const dist = new URL("../dist/", import.meta.url).pathname;
 const releves = [];

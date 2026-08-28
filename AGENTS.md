@@ -60,6 +60,11 @@ reste obligatoire devant `:` et `%`, et à l'intérieur des guillemets.
 Le tiret cadratin `—` garde ses espaces. Les majuscules gardent leurs accents
 (`À`, `É`). « Numéro » s'abrège `n` suivi d'un `o` en exposant, jamais `n°`.
 
+Il surveille aussi l'espace **manquante** après une ponctuation. Astro mange
+l'espace entre du texte et l'élément qui suit, ce qui donne des
+« Zumba Gold®.Voir sa fiche » invisibles à la relecture — deux ont déjà été
+livrées ainsi. Le remède est un `{" "}` explicite avant l'élément.
+
 `pnpm check` fait échouer le build sur ces fautes : `scripts/typographie.mjs`
 relit le HTML produit — donc ce que le visiteur lit, quelle que soit la source.
 

@@ -1,5 +1,6 @@
 export const site = {
-  nom: "Mariane Rollot Carlo",
+  // L'ordre de ses cartes de visite
+  nom: "Mariane Carlo Rollot",
   metier: "Instructrice de Zumba et de danse",
   signature: "la mère qu'on voit danser",
   accroche:
