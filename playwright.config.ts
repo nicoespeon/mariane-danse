@@ -4,9 +4,10 @@ import { defineConfig, devices } from "@playwright/test";
 // sert avec sirv plutôt qu'avec `astro preview` : celui-ci se démonise, donc
 // Playwright voit son processus mourir aussitôt et abandonne.
 //
-// Port dédié, jamais réutilisé : sur celui de l'aperçu (4331), le panneau
-// navigateur intercale son proxy, et les requêtes d'API de Playwright
-// repartent avec « Parse Error: Expected HTTP/ ».
+// `--dev` n'est pas un détail : sans lui, sirv met en cache la taille des
+// fichiers à son démarrage et sert ensuite un build plus récent tronqué à
+// l'ancienne longueur. Port dédié aussi, pour ne jamais hériter d'un serveur
+// lancé avant le build.
 const PORT = 4332;
 
 export default defineConfig({
@@ -24,7 +25,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: `pnpm exec sirv dist --port ${PORT} --quiet`,
+    command: `pnpm exec sirv dist --port ${PORT} --quiet --dev`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
   },

@@ -83,7 +83,7 @@ src/
   layouts/Base.astro   <head>, SEO, slots « tete » / « navigation » / « pied »
   pages/
     index.astro        La page unique
-    carte.astro        Page « écran à montrer » : QR + vCard + partage natif
+    carte.astro        Page « écran à montrer » : QR + partage natif
     contact.vcf.ts     Fiche contact générée au build
     confidentialite.astro
 ```
@@ -118,9 +118,9 @@ identiques en local et en CI.
 
 Les tests E2E servent `dist/` avec `sirv`, pas avec `astro preview` : ce dernier
 se démonise, donc Playwright voit son processus mourir aussitôt et abandonne.
-Ils ont leur propre port (4332), jamais celui de l'aperçu : le panneau
-navigateur intercale un proxy sur le sien, et les requêtes d'API de Playwright
-en reviennent avec « Parse Error: Expected HTTP/ ».
+Toujours avec `--dev` : sinon sirv met en cache la taille des fichiers à son
+démarrage et sert ensuite un build plus récent **tronqué** à l'ancienne
+longueur — page blanche, ou « Parse Error: Expected HTTP/ » dans les tests.
 Deux navigateurs, Chromium et WebKit — WebKit parce que Mariane montre le site
 depuis son téléphone, et que c'est Safari qui s'y exécute.
 
@@ -158,6 +158,18 @@ Ne pas revenir dessus sans raison explicite.
 - **Courriels pré-remplis par intention** plutôt qu'un champ vide : le visiteur
   choisit qui il est, le message s'écrit tout seul, il n'a plus qu'à envoyer.
 - **Une seule page** plus `/carte` et `/confidentialite`. Pas de menu à tiroirs.
+- **Le code QR de `/carte` encode la fiche de contact, pas l'adresse du site.**
+  Mariane tend son téléphone, la personne scanne, Mariane est dans son
+  répertoire — sans réseau, sans téléchargement, sans passer par le site.
+  L'adresse du site voyage dans la fiche, donc rien n'est perdu. Une seule
+  source, `src/data/fiche-contact.ts`, sert le code et le fichier `.vcf` ; un
+  test E2E réencode la fiche servie et compare les deux tracés, parce qu'une
+  divergence ne se voit pas à l'œil.
+  Pas de champ `NOTE` : chaque champ densifie le code, et à cette taille c'est
+  ce qui décide si un téléphone le lit du premier coup. On reste en version 11
+  (61 × 61 modules).
+  Les boutons sous le code servent l'autre entrée : quelqu'un à qui Mariane a
+  envoyé le lien, et qui lit déjà la page sur son téléphone.
 - **Zone desservie dessinée, pas capturée.** `CarteZone.astro` trace les vrais
   contours de l'île de Montréal, de l'île Jésus et de la Rive-Nord. Ils viennent
   d'OpenStreetMap via `scripts/contours.mjs`, et sont figés dans

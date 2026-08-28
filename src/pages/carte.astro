@@ -2,13 +2,18 @@
 import QRCode from "qrcode";
 import Base from "../layouts/Base.astro";
 import { site } from "../data/site";
+import { ficheContact } from "../data/fiche-contact";
 
 // Page conçue pour être tendue à bout de bras après un cours : Mariane
 // l'ouvre sur son téléphone, la personne en face scanne. Pas d'application,
 // pas de compte, pas de Linktree.
-const adresse = Astro.site?.href ?? "https://marianedanse.ca";
-
-const qr = await QRCode.toString(adresse, {
+//
+// Le code encode la fiche de contact elle-même, pas l'adresse du site : la
+// personne scanne et Mariane est dans son répertoire, sans réseau ni
+// téléchargement. L'adresse du site voyage dans la fiche, donc rien n'est
+// perdu. Les boutons plus bas servent l'autre entrée : quelqu'un à qui
+// Mariane a envoyé le lien, et qui lit déjà la page sur son téléphone.
+const qr = await QRCode.toString(ficheContact(Astro.site), {
   type: "svg",
   margin: 0,
   errorCorrectionLevel: "M",
@@ -25,26 +30,28 @@ const qr = await QRCode.toString(adresse, {
     <p class="carte__sur-titre">{site.metier}</p>
     <h1>{site.nom}</h1>
 
-    <div class="carte__qr" set:html={qr} />
-    <p class="carte__consigne">Pointez votre appareil photo ici</p>
+    <div class="carte__qr" set:html={qr} aria-hidden="true" />
+    <p class="carte__consigne">
+      Pointez votre appareil photo ici&nbsp;: Mariane s'ajoute à vos contacts.
+    </p>
 
-    <div class="carte__actions">
-      <a class="bouton bouton--principal" href="/contact.vcf">
-        Ajouter à mes contacts
-      </a>
-      <a class="bouton bouton--fantome" href={`tel:${site.telephone}`}>
-        {site.telephoneAffiche}
-      </a>
-      <button
-        class="bouton bouton--fantome carte__partage"
-        type="button"
-        hidden
-      >
-        Partager
-      </button>
+    <div class="carte__secondaire">
+      <p class="carte__ou">Vous lisez déjà ceci sur votre téléphone?</p>
+
+      <div class="carte__actions">
+        <a class="bouton bouton--principal" href="/contact.vcf">
+          Ajouter à mes contacts
+        </a>
+        <a class="bouton bouton--fantome" href={`tel:${site.telephone}`}>
+          {site.telephoneAffiche}
+        </a>
+        <a class="bouton bouton--fantome" href="/">Voir le site</a>
+      </div>
     </div>
 
-    <p class="carte__retour"><a href="/">Voir le site complet</a></p>
+    <button class="bouton bouton--fantome carte__partage" type="button" hidden>
+      Partager
+    </button>
   </div>
 </Base>
 
@@ -96,8 +103,10 @@ const qr = await QRCode.toString(adresse, {
   }
 
   .carte__qr {
-    width: min(20rem, 72vw);
-    padding: 1.25rem;
+    width: min(22rem, 78vw);
+    /* Un code QR a besoin d'une zone calme d'au moins quatre modules ; à
+       cette densité, ça fait à peu près cette marge. */
+    padding: 1.5rem;
     background: #fff;
     border-radius: var(--rayon-large);
     box-shadow: var(--ombre-levee);
@@ -115,16 +124,37 @@ const qr = await QRCode.toString(adresse, {
     font-size: 0.95rem;
   }
 
+  .carte__consigne {
+    max-width: 26ch;
+  }
+
+  /* Deux entrées, deux publics : le code pour la personne en face de Mariane,
+     les boutons pour celle à qui elle a envoyé le lien. Un trait sépare les
+     deux plutôt qu'un empilement qui laisse croire à une seule marche. */
+  .carte__secondaire {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(20 38 44 / 0.12);
+    width: min(30rem, 100%);
+  }
+
+  .carte__ou {
+    margin: 0;
+    color: var(--encre-doux);
+    font-size: 0.95rem;
+  }
+
   .carte__actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
-    margin-top: 0.5rem;
   }
 
-  .carte__retour {
-    margin: 0;
-    font-size: 0.95rem;
+  .carte__partage {
+    margin-top: 0.5rem;
   }
 </style>

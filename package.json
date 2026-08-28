@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "servir": "sirv dist --port 4331 --quiet",
+    "servir": "sirv dist --port 4331 --quiet --dev",
     "check": "pnpm run format:check && pnpm run check:lint && pnpm run check:types && pnpm run check:morts && pnpm run build && pnpm run check:typo && pnpm run check:e2e && pnpm run check:quality",
     "check:lint": "eslint .",
     "check:types": "astro check",
