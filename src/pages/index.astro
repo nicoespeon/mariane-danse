@@ -30,9 +30,12 @@ const donneesStructurees = {
     addressRegion: "QC",
     addressCountry: "CA",
   },
+  sameAs: site.instagram.actif
+    ? [`https://instagram.com/${site.instagram.handle}`]
+    : undefined,
   areaServed: zonesDesservies.map((zone) => ({
     "@type": "City",
-    name: zone,
+    name: zone.nom,
   })),
   makesOffer: offres.map((offre) => ({
     "@type": "Offer",

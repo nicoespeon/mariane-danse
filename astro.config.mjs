@@ -2,7 +2,8 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 
-// TODO: remplacer par le domaine définitif une fois réservé (cf. tâche Notion)
+// mariannedanse.ca (deux n) est réservé aussi, en redirection vers celui-ci :
+// « Mariane » s'écrit spontanément avec deux n.
 export const SITE_URL = "https://marianedanse.ca";
 
 export default defineConfig({
