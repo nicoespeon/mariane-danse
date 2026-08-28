@@ -1,6 +1,6 @@
 # mariane-danse
 
-Site vitrine de **Mariane Rollot Carlo**, instructrice de Zumba à Laval.
+Site vitrine de **Mariane Carlo Rollot**, instructrice de Zumba à Laval.
 
 Zumba Gold pour les aînés, Zumba Kids, cours mamans-bébés et animations
 d'événements — à Laval, Montréal et sur la Rive-Nord.

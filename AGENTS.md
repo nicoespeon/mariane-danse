@@ -1,6 +1,6 @@
 # Site de Mariane
 
-Site vitrine de Mariane Rollot Carlo, instructrice de Zumba à Laval.
+Site vitrine de Mariane Carlo Rollot, instructrice de Zumba à Laval.
 
 ## À qui s'adresse ce site
 
@@ -86,6 +86,7 @@ src/
     merci.astro        Après l'envoi du formulaire, à la place de Web3Forms
     carte.astro        Page « écran à montrer » : QR + partage natif
     contact.vcf.ts     Fiche contact générée au build
+    manifest.webmanifest.ts  Généré aussi, pour qu'il suive le nom du site
     confidentialite.astro
 ```
 

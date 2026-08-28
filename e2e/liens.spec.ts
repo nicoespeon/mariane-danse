@@ -45,3 +45,21 @@ test("la fiche contact se télécharge et porte le bon nom", async ({
   expect(reponse.status()).toBe(200);
   expect(await reponse.text()).toContain("FN:Mariane Carlo Rollot");
 });
+
+// Le manifeste répétait le nom en dur, dans public/ : il est resté « Mariane
+// Rollot Carlo » après le changement d'ordre, et rien ne pouvait le signaler.
+// Il est généré depuis src/data/site.ts, et ce test le vérifie.
+test("le manifeste porte le nom du site", async ({ page, request }) => {
+  await page.goto("/");
+
+  const chemin = await page
+    .locator("link[rel='manifest']")
+    .getAttribute("href");
+  expect(chemin).toBeTruthy();
+
+  const reponse = await request.get(chemin ?? "");
+  expect(reponse.status()).toBe(200);
+
+  const nomAffiche = await page.locator(".pied__marque strong").innerText();
+  expect((await reponse.json()).name).toContain(nomAffiche);
+});
