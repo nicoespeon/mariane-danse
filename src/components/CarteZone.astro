@@ -182,7 +182,7 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     display: block;
   }
 
-  @container (min-width: 27rem) {
+  @container (min-width: 25rem) {
     .zone__nom {
       display: block;
     }
@@ -191,7 +191,7 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
   /* Les noms passent de la carte à la légende, jamais les deux à la fois :
      répétés, ils ne sont que du bruit, et une puce de la même couleur pour
      chaque ville ne ferait qu'imiter une légende sans rien expliquer. */
-  @container (min-width: 27rem) {
+  @container (min-width: 25rem) {
     .zone__villes {
       display: none;
     }

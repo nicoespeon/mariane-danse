@@ -21,6 +21,10 @@ const milieux = [
   <div class="enveloppe">
     <h2>Où Mariane se déplace</h2>
     <p class="chapeau">Laval, Montréal et la Rive-Nord.</p>
+    <p class="precision">
+      Sur la Rive-Nord&nbsp;: {autresVillesDesservies.slice(0, -1).join(", ")}
+      {" "}et {autresVillesDesservies.at(-1)}.
+    </p>
 
     <div class="lieux">
       <CarteZone />
@@ -36,11 +40,6 @@ const milieux = [
         }
       </ul>
     </div>
-
-    <p class="autres-villes">
-      Elle se déplace aussi à {autresVillesDesservies.slice(0, -1).join(", ")} et
-      {" "}{autresVillesDesservies.at(-1)}.
-    </p>
   </div>
 </section>
 
@@ -81,11 +80,13 @@ const milieux = [
     color: var(--encre-doux);
   }
 
-  /* Les villes que les gens d'ici reconnaissent, en toutes lettres : c'est
-     sur ces noms-là qu'un coordonnateur cherche. */
-  .autres-villes {
-    margin: 2.5rem 0 0;
-    max-width: none;
+  /* Ce que « Rive-Nord » veut dire, en toutes lettres : c'est sur ces noms-là
+     qu'un coordonnateur cherche. Plus petit que le chapeau, il précise sans
+     prendre sa place. */
+  .precision {
+    margin-top: -0.5rem;
+    max-width: 60ch;
+    font-size: 0.95rem;
     color: var(--encre-doux);
   }
 </style>

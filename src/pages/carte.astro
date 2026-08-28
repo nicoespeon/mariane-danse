@@ -38,20 +38,20 @@ const qr = await QRCode.toString(ficheContact(Astro.site), {
     <div class="carte__secondaire">
       <p class="carte__ou">Vous lisez déjà ceci sur votre téléphone?</p>
 
-      <div class="carte__actions">
-        <a class="bouton bouton--principal" href="/contact.vcf">
-          Ajouter à mes contacts
-        </a>
-        <a class="bouton bouton--fantome" href={`tel:${site.telephone}`}>
-          {site.telephoneAffiche}
-        </a>
-        <a class="bouton bouton--fantome" href="/">Voir le site</a>
-      </div>
-    </div>
+      <a class="bouton bouton--principal" href="/contact.vcf">
+        Ajouter à mes contacts
+      </a>
 
-    <button class="bouton bouton--fantome carte__partage" type="button" hidden>
-      Partager
-    </button>
+      <ul class="carte__liens">
+        <li>
+          <a href={`tel:${site.telephone}`}>{site.telephoneAffiche}</a>
+        </li>
+        <li><a href="/">Voir le site</a></li>
+        <li>
+          <button class="carte__partage" type="button" hidden>Partager</button>
+        </li>
+      </ul>
+    </div>
   </div>
 </Base>
 
@@ -147,14 +147,35 @@ const qr = await QRCode.toString(ficheContact(Astro.site), {
     font-size: 0.95rem;
   }
 
-  .carte__actions {
+  .carte__liens {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 0 1.5rem;
   }
 
+  .carte__liens a,
   .carte__partage {
-    margin-top: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--mer);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 0.08em;
+    cursor: pointer;
+  }
+
+  .carte__liens a:hover,
+  .carte__partage:hover {
+    color: var(--mer-sombre);
   }
 </style>

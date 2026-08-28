@@ -64,6 +64,12 @@ const temoignages = await getCollection(
 
   .temoignage {
     margin: 0;
+    /* Le nom et le lien se calent en bas : d'une carte à l'autre les
+       citations n'ont pas la même longueur, et des pieds à des hauteurs
+       différentes donnent une rangée de travers. */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     padding: 1.75rem;
     background: #fff;
     border-radius: var(--rayon-large);
@@ -90,6 +96,7 @@ const temoignages = await getCollection(
   }
 
   .temoignage figcaption {
+    margin-top: auto;
     display: grid;
     font-size: 0.9rem;
     color: var(--encre-doux);

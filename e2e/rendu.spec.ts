@@ -112,3 +112,35 @@ for (const { chemin, nom } of PAGES) {
     });
   });
 }
+
+// Les noms de villes sont posés en HTML par-dessus le SVG, à des coordonnées
+// calculées : deux qui se chevauchent ne cassent rien, ils rendent juste la
+// carte illisible. Le seuil qui les fait apparaître se règle au pixel près,
+// d'où ce filet.
+test("ne laisse jamais deux noms de villes se chevaucher", async ({ page }) => {
+  await page.goto("/");
+
+  const chevauchements = await page
+    .locator(".zone__nom")
+    .evaluateAll((etiquettes) => {
+      const visibles = etiquettes
+        .filter((etiquette) => etiquette.checkVisibility())
+        .map((etiquette) => ({
+          nom: etiquette.textContent?.trim() ?? "",
+          boite: etiquette.getBoundingClientRect(),
+        }));
+
+      return visibles.flatMap((un, index) =>
+        visibles.slice(index + 1).flatMap((autre) => {
+          const separes =
+            un.boite.right <= autre.boite.left ||
+            autre.boite.right <= un.boite.left ||
+            un.boite.bottom <= autre.boite.top ||
+            autre.boite.bottom <= un.boite.top;
+          return separes ? [] : [`${un.nom} ↔ ${autre.nom}`];
+        }),
+      );
+    });
+
+  expect(chevauchements).toEqual([]);
+});

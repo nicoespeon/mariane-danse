@@ -21,9 +21,6 @@ export const licence = {
   zinId: "4513608",
   profil: "https://www.zumba.com/en-US/p/mariane-carlo/4513608",
   intitules: ["Zumba®", "Zumba Gold®"],
-  // Relevé à la main sur la fiche : avec si peu d'avis, un seul suffit à faire
-  // bouger la note. À revérifier quand on touche à cette section.
-  avis: { note: "5,0", nombre: 7 },
 } as const;
 
 // Deux listes, deux promesses différentes. Celle-ci porte des coordonnées et
