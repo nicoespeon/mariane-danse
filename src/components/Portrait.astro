@@ -1,0 +1,102 @@
+---
+import Vague from "./Vague.astro";
+import { licence } from "../data/site";
+
+// Le lecteur est un coordonnateur de loisirs qui compare deux ou trois
+// instructrices. Cette section parle d'elle, pas de la Zumba : ce que les
+// cartes de cours disent déjà n'a pas à être redit ici, et la logistique
+// standard (elle apporte sa musique, vous fournissez la salle) n'est pas un
+// argument — c'est ce que fait n'importe quel prestataire.
+const raisons = [
+  {
+    titre: "Elle vient de la danse",
+    texte:
+      "Elle danse depuis des années, et elle enseigne la danse autant que la Zumba. Ses licences d'instructrice sont venues après.",
+  },
+  {
+    titre: "Aînés, enfants, nouvelles mamans",
+    texte:
+      "Elle anime les quatre formules, et pas de la même façon. Un cours en résidence et une période de parascolaire n'ont rien à voir.",
+  },
+  {
+    titre: "Les gens parlent de son énergie",
+    texte:
+      "C'est le mot qui revient le plus souvent après un cours. Elle est du genre à embarquer tout le monde, même ceux qui étaient venus regarder.",
+  },
+  {
+    titre: "Elle connaît son groupe",
+    texte:
+      "Elle parle aux participants avant et après le cours, et en quelques semaines elle sait qui a besoin d'une chaise et qui veut monter le rythme.",
+  },
+];
+---
+
+<section class="section section--mer" id="mariane">
+  <Vague couleur="var(--mer-sombre)" bord="haut" />
+  <Vague couleur="var(--mer-sombre)" bord="bas" />
+
+  <div class="enveloppe">
+    <h2>Pourquoi faire appel à Mariane</h2>
+
+    <ul class="raisons">
+      {
+        raisons.map((raison) => (
+          <li class="raison">
+            <h3>{raison.titre}</h3>
+            <p>{raison.texte}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="licence">
+      Membre licenciée du <strong>Zumba Instructor Network</strong>, ZIN n<sup
+        >o</sup
+      >&nbsp;{licence.zinId} ({licence.intitules.join(" et ")}).{" "}
+      <a href={licence.profil} rel="noopener">Voir sa fiche sur zumba.com</a>.
+    </p>
+  </div>
+</section>
+
+<style>
+  .raisons {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  }
+
+  .raison h3 {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .raison h3::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 0.35rem;
+    border-radius: 999px;
+    background: var(--soleil);
+  }
+
+  .raison p {
+    color: var(--mer-brume);
+    margin: 0;
+  }
+
+  .licence {
+    margin: 2.5rem 0 0;
+    padding: 1rem 1.5rem;
+    max-width: none;
+    border-radius: var(--rayon);
+    background: rgb(255 255 255 / 0.08);
+    color: var(--mer-brume);
+    font-size: 0.95rem;
+  }
+
+  .licence strong {
+    color: var(--sable);
+  }
+</style>
