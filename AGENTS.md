@@ -30,6 +30,53 @@ métaphore tient des deux côtés.
 Un peu de fantaisie est souhaitée (dans l'esprit de Josh Comeau), jamais au prix
 de la lisibilité.
 
+## Son parcours, pour écrire juste
+
+Elle enseigne la **Zumba depuis février 2026**. Rien sur le site ne doit
+suggérer des années d'expérience en Zumba, ni des organismes qui la
+reprennent depuis longtemps.
+
+La danse, elle, est ancienne, et c'est là qu'est la vraie preuve :
+
+- danse classique jusqu'au premier rôle dans _La Veuve Joyeuse_, salle Poirel
+  à Nancy ;
+- modern jazz, qu'elle enseignait en MJC en France dès 2014 ;
+- hip-hop ;
+- des saisons de danse en Club Med.
+
+Entre 2018 et 2025 elle a fait autre chose, donc **pas de « depuis 2014 »
+continu** : on date les faits, on n'affirme pas une carrière ininterrompue.
+
+Le premier rôle et la salle Poirel ne sont pas sur le site : à un
+coordonnateur de Laval, « Nancy » et « opérette » ne disent rien, alors que
+« Club Med » et « elle donnait des cours en 2014 » se lisent tout de suite.
+Ils resservent le jour où une section « à propos » existera.
+
+### Le ton
+
+Le piège de cette page, c'est la phrase qui claque. Deux fois de suite la
+section « Pourquoi faire appel à Mariane » est repartie à la corbeille pour
+ça : « ça vient de ses années de danse », « c'est la musique qui fait sortir
+les gens de leur chambre ». Le motif est toujours le même — une phrase de
+mise en place, puis une chute — et il sonne publicitaire, pas humain.
+
+La règle : **aucune phrase ne doit être une chute.** Concrètement, on évite
+les tournures clivées (« c'est X qui… »), le deux-points suivi d'une formule,
+les énumérations à trois termes dont le dernier glisse vers l'émotion, les
+titres en « X, pas Y » et « Zéro X », et la sagesse toute faite (« ça ne
+s'improvise pas »). Le registre parlé d'ici (« elle est du genre à embarquer
+le groupe avec elle ») vaut mieux qu'une formule polie.
+
+Deuxième piège, plus sournois : **le détail concret inventé pour faire vrai.**
+« même ceux qui étaient venus regarder » a été écrit puis retiré — personne ne
+vient regarder un cours de Zumba, et un lecteur qui connaît le métier le sent
+tout de suite. Un détail qu'on n'a pas vérifié auprès de Mariane ne va pas sur
+la page, même s'il sonne juste.
+
+Et **on ne vend pas la pratique standard.** « Vous n'avez rien à installer »
+a été écrit, puis retiré : c'est ce que fait n'importe quel prestataire, et
+l'annoncer comme un avantage décote tout le reste de la page.
+
 ## Contraintes non négociables
 
 - **Statique.** Aucun serveur, aucune base de données. Tout est généré au build.
