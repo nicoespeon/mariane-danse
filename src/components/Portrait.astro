@@ -23,11 +23,6 @@ const raisons = [
     texte:
       "C'est le mot qui revient le plus souvent après un cours. Mariane vit la musique et sait transmettre sa passion à son groupe.",
   },
-  {
-    titre: "On peut compter sur elle",
-    texte:
-      "Écrivez-lui, elle reviendra vers vous rapidement, avec ce qu'elle propose, ce que ça coûte et ce dont elle a besoin dans la salle.",
-  },
 ];
 ---
 
@@ -65,7 +60,9 @@ const raisons = [
     padding: 0;
     display: grid;
     gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+    /* 18rem plutôt que 19 : à 1200 px de fenêtre il manquait 18 px pour
+       tenir les trois blocs sur une ligne, et le troisième restait seul. */
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
   }
 
   .raison h3 {
