@@ -202,6 +202,18 @@ Ne pas revenir dessus sans raison explicite.
 - **Astro**, pour la sortie statique et l'optimisation d'images au build.
 - **Cloudflare Pages**, pour les préversions par pull request — c'est ce qui
   permet de valider un changement sur une vraie URL avant qu'il touche la prod.
+
+  **En dépôt direct, jamais connecté à GitHub.** L'assistant Cloudflare
+  propose de bâtir lui-même depuis le dépôt; ne pas accepter. Il déploierait
+  sans attendre `pnpm check`, donc un commit qui casse Lighthouse ou les tests
+  partirait en production quand même. C'est GitHub Actions qui bâtit, vérifie,
+  puis pousse `dist/` avec `wrangler pages deploy`.
+
+  Deux raisons de plus, découvertes en essayant : leur image de build lit
+  `.tool-versions` mais **n'a pas le plugin asdf de pnpm**, donc le build
+  échoue en huit secondes; et `PUBLIC_WEB3FORMS_KEY` n'existant pas dans leur
+  environnement, le formulaire ne se serait pas affiché du tout.
+
 - **Web3Forms** pour le formulaire : un POST HTML sans JavaScript. C'est le
   seul chemin de contact qui ne suppose rien chez le visiteur — un `mailto:`
   reste muet pour qui lit son courriel dans un navigateur.
@@ -327,9 +339,9 @@ Cherchez `MediaAbsent` et `TODO`.
 - **Photos et vidéos** : tous les emplacements sont réservés et légendés avec ce
   qu'on attend à chaque endroit.
 - **Témoignages** : la section disparaît du build tant qu'aucun n'a `publie: true`.
-- **Déploiement** : les secrets Cloudflare ne sont pas encore configurés, donc le
-  job de déploiement se saute tout seul. `marianedanse.ca` et `mariannedanse.ca`
-  sont réservés chez Rebel.ca et restent à brancher.
+- **Domaines** : le site vit sur `mariane-danse.pages.dev` depuis le 30 août 2026. `marianedanse.ca` et `mariannedanse.ca` (deux `n`, en redirection)
+  sont réservés chez Rebel.ca; leurs nameservers pointent vers Cloudflare et
+  il reste à les brancher sur le projet Pages.
 
 ## Suivi
 
