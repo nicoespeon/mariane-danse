@@ -203,6 +203,14 @@ Ne pas revenir dessus sans raison explicite.
 - **Cloudflare Pages**, pour les préversions par pull request — c'est ce qui
   permet de valider un changement sur une vraie URL avant qu'il touche la prod.
 
+  En production depuis le 30 août 2026 sur `marianedanse.ca`. `www`,
+  `mariannedanse.ca` (deux `n`) et son `www` redirigent en 301 vers l'apex,
+  chemin conservé, par des règles de redirection Cloudflare. Les zones
+  redirigées portent un `A` vers `192.0.2.1`, une adresse de test qui ne
+  répond jamais : la règle intercepte avant. Si elle cesse de couvrir un nom,
+  ce nom rend un **522 au bout de 90 secondes** — ça ressemble à une panne
+  réseau, c'est en fait la règle qui ne correspond pas.
+
   **En dépôt direct, jamais connecté à GitHub.** L'assistant Cloudflare
   propose de bâtir lui-même depuis le dépôt; ne pas accepter. Il déploierait
   sans attendre `pnpm check`, donc un commit qui casse Lighthouse ou les tests
@@ -339,9 +347,10 @@ Cherchez `MediaAbsent` et `TODO`.
 - **Photos et vidéos** : tous les emplacements sont réservés et légendés avec ce
   qu'on attend à chaque endroit.
 - **Témoignages** : la section disparaît du build tant qu'aucun n'a `publie: true`.
-- **Domaines** : le site vit sur `mariane-danse.pages.dev` depuis le 30 août 2026. `marianedanse.ca` et `mariannedanse.ca` (deux `n`, en redirection)
-  sont réservés chez Rebel.ca; leurs nameservers pointent vers Cloudflare et
-  il reste à les brancher sur le projet Pages.
+- **Formulaire** : jamais essayé de bout en bout. Web3Forms refuse une
+  redirection hors domaine, donc l'envoi ne se teste ni en local ni en
+  préversion — seulement depuis `marianedanse.ca`, et l'essai arrive dans la
+  boîte de Mariane.
 
 ## Suivi
 
