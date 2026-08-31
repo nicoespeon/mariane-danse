@@ -2,6 +2,10 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import * as z from "zod";
 
+// Tout tient dans le frontmatter : le corps du Markdown n'est rendu nulle part,
+// et la page unique n'a pas d'endroit où le mettre. Quatre fiches en portaient
+// un, jamais affiché, qui a fini par décrire les offres autrement que le
+// frontmatter. Ne pas en réécrire.
 const offres = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/offres" }),
   schema: z.object({

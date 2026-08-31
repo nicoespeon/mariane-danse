@@ -9,7 +9,3 @@ bienfaits:
 ordre: 1
 emoji: "🌞"
 ---
-
-Version adaptée du Zumba, conçue pour les aînés. Mariane ajuste l'intensité en
-temps réel selon le groupe, et propose systématiquement une variante assise pour
-que les personnes à mobilité réduite dansent avec les autres — pas à côté.

@@ -9,7 +9,3 @@ bienfaits:
 ordre: 2
 emoji: "🎈"
 ---
-
-Séances rythmées, construites autour de jeux dansés et de chorégraphies simples
-à mémoriser. Format adaptable à une période scolaire comme à une demi-journée de
-camp de jour.

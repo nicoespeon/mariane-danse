@@ -9,6 +9,3 @@ bienfaits:
 ordre: 3
 emoji: "🤱"
 ---
-
-Cours pensé pour la période post-partum. Le bébé reste avec sa mère, porté
-contre elle ou posé sur une couverture à côté, selon ce qu'elle préfère.

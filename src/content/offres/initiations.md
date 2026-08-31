@@ -9,6 +9,3 @@ bienfaits:
 ordre: 4
 emoji: "✨"
 ---
-
-Pour les organismes qui veulent tester avant de s'engager sur une session, ou
-animer un moment ponctuel. Mariane arrive avec sa musique et son matériel.
