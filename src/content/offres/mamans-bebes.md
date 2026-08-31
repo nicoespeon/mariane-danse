@@ -1,15 +1,15 @@
 ---
 titre: Zumba mamans-bébés
 pour: Nouvelles mamans, en maison de naissance
-resume: Bouger avec son bébé contre soi, sans avoir à trouver une gardienne. Danse et portage réunis.
+resume: Reprendre une activité douce après l'accouchement, avec le bébé en portage, posé à côté, ou sans lui.
 bienfaits:
   - Reprise en douceur après l'accouchement
-  - Lien avec le bébé par le mouvement
+  - Bébé porté, posé à côté, ou resté à la maison
   - Sortir de l'isolement du post-partum
 ordre: 3
 emoji: "🤱"
 ---
 
-Cours pensé pour la période post-partum : intensité modérée, mouvements
-compatibles avec le portage, et un groupe de mamans qui vivent la même chose au
-même moment.
+Cours pensé pour la période post-partum. Certaines viennent seules pour se
+remettre à bouger, d'autres amènent le bébé, en portage ou posé sur une
+couverture à côté. Les deux se font dans le même cours.
