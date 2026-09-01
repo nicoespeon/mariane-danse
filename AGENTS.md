@@ -168,7 +168,10 @@ commande, donc si elle passe en local, elle passe en CI. Elle enchaîne :
 | `check:quality` | Lighthouse : performance, accessibilité, SEO                |
 
 Lighthouse utilise le Chrome téléchargé par Puppeteer, donc les scores sont
-identiques en local et en CI.
+identiques en local et en CI. Il tourne **deux fois** : une passe « desktop »,
+puis une passe mobile bridée en 4G, qui est le défaut de Lighthouse quand
+aucun préréglage n'est donné. La deuxième double le temps de l'étape, et c'est
+elle qui compte — Mariane montre le site depuis son téléphone.
 
 Les tests E2E servent `dist/` avec `sirv`, pas avec `astro preview` : ce dernier
 se démonise, donc Playwright voit son processus mourir aussitôt et abandonne.

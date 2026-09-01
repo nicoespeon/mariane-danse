@@ -28,9 +28,25 @@ if (!chrome) {
   process.exit(1);
 }
 
-const lhci = spawn("lhci", ["autorun"], {
-  stdio: "inherit",
-  env: { ...process.env, CHROME_PATH: chrome },
-});
+// Deux passages plutôt qu'un : le préréglage « desktop » ne dit rien de ce que
+// vit un visiteur sur son téléphone, et c'est de là que Mariane montre le site.
+// Sans preset, Lighthouse mesure en mobile avec bridage 4G — son défaut.
+const passages = [
+  ["bureau", "lighthouserc.json"],
+  ["mobile", "lighthouserc.mobile.json"],
+];
 
-lhci.on("exit", (code) => process.exit(code ?? 1));
+const lance = (config) =>
+  new Promise((resolve) => {
+    const lhci = spawn("lhci", ["autorun", `--config=${config}`], {
+      stdio: "inherit",
+      env: { ...process.env, CHROME_PATH: chrome },
+    });
+    lhci.on("exit", (code) => resolve(code ?? 1));
+  });
+
+for (const [nom, config] of passages) {
+  console.log(`\n--- Lighthouse : ${nom} ---`);
+  const code = await lance(config);
+  if (code !== 0) process.exit(code);
+}

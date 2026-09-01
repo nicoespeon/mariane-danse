@@ -46,6 +46,7 @@ jobs:
           name: rapports-qualite
           path: |
             .lighthouseci/
+            .lighthouseci-mobile/
             playwright-report/
             test-results/
           retention-days: 7

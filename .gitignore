@@ -25,6 +25,7 @@ pnpm-debug.log*
 
 # lighthouse ci
 .lighthouseci/
+.lighthouseci-mobile/
 
 # playwright
 test-results/
