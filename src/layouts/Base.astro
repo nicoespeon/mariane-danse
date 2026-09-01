@@ -3,7 +3,8 @@ import { getImage } from "astro:assets";
 
 import "@fontsource-variable/fraunces";
 import "../styles/global.css";
-import portrait from "../assets/portrait.jpg";
+import goldMiroir from "../assets/gold-miroir.jpg";
+import { site } from "../data/site";
 
 type Props = {
   titre: string;
@@ -17,15 +18,19 @@ type Props = {
 const { titre, description, navigation = true, indexable = true } = Astro.props;
 const canonique = new URL(Astro.url.pathname, Astro.site);
 
-// Toutes les photos disponibles sont verticales. Cadrer en 1200 x 630 depuis
-// le haut garde son visage plutôt que de le couper.
+// Toutes les photos disponibles sont verticales, donc un cadrage 1200 x 630
+// en découpe une bande fine : le choix de la photo compte plus que celui de
+// la position. Celle-ci est la seule dont la bande centrale tient debout —
+// son visage, son bras levé, et le cours derrière elle dans le miroir.
+// Cadrer `portrait.jpg` depuis le haut donnait 85 % de dalles de plafond,
+// et c'est cette image-là qui s'affiche quand on partage le lien par message.
 const partage = await getImage({
-  src: portrait,
+  src: goldMiroir,
   width: 1200,
   height: 630,
   format: "jpeg",
   fit: "cover",
-  position: "top",
+  position: "centre",
 });
 const imagePartage = new URL(partage.src, Astro.site);
 ---
@@ -46,10 +51,18 @@ const imagePartage = new URL(partage.src, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonique} />
     <meta property="og:image" content={imagePartage} />
+    {
+      /* Messenger et WhatsApp affichent l'aperçu dès le premier partage
+        quand les dimensions sont annoncées, sans attendre de télécharger
+        l'image pour les mesurer. */
+    }
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Mariane Carlo Rollot en studio, bras ouverts, en plein mouvement"
+      content="Mariane Carlo Rollot, bras levé, mène un cours de Zumba dans une salle communautaire"
     />
+    <meta property="og:site_name" content={site.nom} />
     <meta name="twitter:card" content="summary_large_image" />
 
     <meta name="theme-color" content="#0b5c64" />
