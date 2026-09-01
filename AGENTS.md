@@ -126,7 +126,9 @@ src/
   data/site.ts         Coordonnées, signature, bascule Instagram
   content/offres/      Une fiche Markdown par type de cours
   content/temoignages/ Un fichier par témoignage (masqué tant que publie: false)
-  components/          Une section de page par composant
+  assets/              Photos et affiches de vidéo, optimisées au build
+  components/          Une section de page par composant, plus quelques briques
+                       partagées (Vague, Video, Soleil, IconeInstagram)
   layouts/Base.astro   <head>, SEO, slots « tete » / « navigation » / « pied »
   pages/
     index.astro        La page unique
@@ -135,6 +137,9 @@ src/
     contact.vcf.ts     Fiche contact générée au build
     manifest.webmanifest.ts  Généré aussi, pour qu'il suive le nom du site
     confidentialite.astro
+public/
+  videos/              Extraits muets, déjà encodés : trop lourds pour le
+                       pipeline d'images, et `poster` ne prend qu'une URL
 ```
 
 Le contenu vit dans `src/content/` et `src/data/`, jamais en dur dans un
@@ -331,9 +336,14 @@ Ne pas revenir dessus sans raison explicite.
 - **Jamais « zumba » dans le nom de domaine.** Les conditions des instructeurs
   licenciés Zumba Fitness l'interdisent. Le mot reste libre dans les textes de
   la page, où il est même attendu.
-- **Droit à l'image.** Mariane a confirmé que les médias qu'elle fournit sont
-  dégagés. Pour toute nouvelle prise de vue, garder le réflexe : Mariane nette
-  au premier plan, participants de dos ou en flou de mouvement.
+- **Droit à l'image. Ne pas supposer qu'un média fourni est dégagé.** Les
+  photos d'aînés le sont, celles d'enfants ne l'étaient pas : la série prise à
+  une kermesse d'école n'a aucune autorisation parentale, et la photo publiée
+  en classe a fallu masquer un visage. Le cadrage règle le problème mieux que
+  la retouche — **Mariane nette au premier plan, participants de dos ou en
+  flou de mouvement**, ce qui se décide avant la prise de vue, pas après.
+  Un emoji ou un floutage sur un visage d'enfant attire l'œil sur ce qu'on
+  cache et se lit comme « on n'avait pas la permission ».
 - **Attribution OpenStreetMap.** Les contours sont sous ODbL : le crédit sous
   la carte n'est pas décoratif, il est exigé par la licence.
 - **Loi 25.** Le formulaire transite hors Québec, d'où la mention sous le
@@ -342,24 +352,18 @@ Ne pas revenir dessus sans raison explicite.
 
 ## Ce qui manque encore
 
-Cherchez `TODO`.
-
-- **Zumba Kids** : la photo a été prise en classe, sans autorisation
-  parentale, donc le visage de l'enfant est masqué par un emoji. Ça tient
-  parce qu'il est le seul reconnaissable, et Mariane l'a validé. Aucune vidéo
-  d'enfants n'est publiable pour la même raison : celles de la kermesse
-  montrent une vingtaine de visages nets, et la caméra est derrière Mariane,
-  donc il n'existe aucun cadrage qui la garde elle sans eux. La vraie sortie
-  est une prise de vue en parascolaire ou en camp, où l'organisme fait signer
-  les autorisations — **caméra derrière le groupe, Mariane de face, enfants de
-  dos**, ce qui règle le droit à l'image par le cadrage.
+- **Zumba Kids** : une seule photo, avec un visage masqué par un emoji. Aucune
+  vidéo d'enfants n'est publiable — celles qu'on a montrent une vingtaine de
+  visages nets et la caméra est derrière Mariane, donc aucun cadrage ne la
+  garde elle sans eux. Une prise de vue en parascolaire ou en camp, où
+  l'organisme fait signer les autorisations, réglerait les deux d'un coup.
 - **Le composant `MediaAbsent`** a été supprimé quand le dernier emplacement a
   été rempli. Il est dans l'historique si un trou réapparaît.
 - **Témoignages** : la section disparaît du build tant qu'aucun n'a `publie: true`.
-- **Formulaire** : jamais essayé de bout en bout. Web3Forms refuse une
-  redirection hors domaine, donc l'envoi ne se teste ni en local ni en
-  préversion — seulement depuis `marianedanse.ca`, et l'essai arrive dans la
-  boîte de Mariane.
+- **Fiche Google Business** : à créer. Pour du service local, elle rapporte
+  souvent plus que le référencement du site. Nom `Mariane Carlo Rollot` sans
+  « Zumba » — la marque est réservée dans un nom d'entreprise, alors qu'elle
+  est attendue dans la description.
 
 ## Suivi
 
