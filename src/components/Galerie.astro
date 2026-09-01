@@ -1,24 +1,83 @@
 ---
-import MediaAbsent from "./MediaAbsent.astro";
+import { Image } from "astro:assets";
+import Video from "./Video.astro";
 import IconeInstagram from "./IconeInstagram.astro";
 import { site } from "../data/site";
 
-// TODO: remplacer par <Image /> et <video> une fois les médias fournis.
-// Le cadrage retenu — Mariane nette au premier plan, participants de dos ou
-// flous — évite d'avoir à collecter des autorisations de droit à l'image.
-const emplacements = [
+import goldAssis from "../assets/gold-assis.jpg";
+import goldMiroir from "../assets/gold-miroir.jpg";
+import goldVerticalAffiche from "../assets/gold-vertical-affiche.jpg";
+import kids from "../assets/kids.jpg";
+import mamansBebes from "../assets/mamans-bebes.jpg";
+import studioSourire from "../assets/studio-sourire.jpg";
+import danseAujourdhui from "../assets/danse-aujourdhui.jpg";
+import studioCoursAffiche from "../assets/studio-cours-affiche.jpg";
+import portrait from "../assets/portrait.jpg";
+
+// Toutes les images viennent du téléphone de Mariane, donc verticales. Le
+// gabarit garde un seul format et fait varier la taille : deux cases doubles
+// cassent la régularité sans obliger à recadrer chaque photo autrement.
+//
+// Le cadrage recherché — Mariane nette devant, participants au loin ou dans
+// le miroir — évite d'avoir à collecter des autorisations de droit à l'image.
+type Element = { alt: string; grand?: true } & (
+  | { type: "image"; image: import("astro").ImageMetadata }
+  | {
+      type: "video";
+      source: string;
+      affiche: import("astro").ImageMetadata;
+    }
+);
+
+const media: Element[] = [
   {
-    legende: "Zumba Gold en résidence — variante assise sur chaise",
-    ratio: "4 / 3",
+    type: "image",
+    image: goldAssis,
+    grand: true,
+    alt: "Vue de dos de Mariane assise sur une chaise, bras tendus vers le haut, devant une dizaine d'aînés assis qui reprennent le mouvement.",
   },
-  { legende: "Zumba Kids — plan large, enfants en mouvement", ratio: "4 / 3" },
   {
-    legende: "Portrait de Mariane — sert aussi à l'aperçu de partage",
-    ratio: "1 / 1",
+    type: "video",
+    source: "/videos/gold-vertical.mp4",
+    affiche: goldVerticalAffiche,
+    alt: "Douze secondes d'un cours de Zumba Gold en salle communautaire, sans le son.",
   },
-  { legende: "Vidéo verticale 15-30 s — Zumba Gold", ratio: "9 / 16" },
-  { legende: "Vidéo verticale 15-30 s — Zumba Kids", ratio: "9 / 16" },
-  { legende: "Vidéo verticale 15-30 s — mamans-bébés", ratio: "9 / 16" },
+  {
+    type: "image",
+    image: kids,
+    alt: "Mariane, bras levé, anime une ronde dansée dans une classe de maternelle.",
+  },
+  {
+    type: "image",
+    image: studioSourire,
+    alt: "Mariane avance vers l'objectif en riant, dans un studio de danse.",
+  },
+  {
+    type: "image",
+    image: goldMiroir,
+    alt: "Mariane de profil dans une salle communautaire, bras levé, le cours qui la suit visible dans le miroir.",
+  },
+  {
+    type: "image",
+    image: mamansBebes,
+    alt: "Mariane, genou levé, mène un cours devant un petit groupe de mamans dans un studio.",
+  },
+  {
+    type: "image",
+    image: danseAujourdhui,
+    alt: "Mariane, pieds nus, la jambe tendue à hauteur d'épaule contre un mur blanc.",
+  },
+  {
+    type: "video",
+    source: "/videos/studio-cours.mp4",
+    affiche: studioCoursAffiche,
+    alt: "Douze secondes d'un cours d'adultes en studio, sans le son.",
+  },
+  {
+    type: "image",
+    image: portrait,
+    alt: "Mariane en studio, bras ouverts, en plein tour sur elle-même.",
+  },
 ];
 ---
 
@@ -30,15 +89,34 @@ const emplacements = [
       bienveillance, et du plaisir.
     </p>
 
-    <div class="galerie">
-      {
-        emplacements.map((emplacement) => (
-          <MediaAbsent
-            legende={emplacement.legende}
-            ratio={emplacement.ratio}
-          />
-        ))
-      }
+    <div class="galerie-cadre">
+      <div class="galerie">
+        {
+          media.map((element) => (
+            <figure
+              class:list={[
+                "galerie__cadre",
+                element.grand && "galerie__cadre--grand",
+              ]}
+            >
+              {element.type === "video" ? (
+                <Video
+                  source={element.source}
+                  affiche={element.affiche}
+                  description={element.alt}
+                />
+              ) : (
+                <Image
+                  src={element.image}
+                  alt={element.alt}
+                  widths={[320, 640]}
+                  sizes="(min-width: 60rem) 22rem, (min-width: 40rem) 45vw, 90vw"
+                />
+              )}
+            </figure>
+          ))
+        }
+      </div>
     </div>
 
     {
@@ -62,11 +140,61 @@ const emplacements = [
 </section>
 
 <style>
-  .galerie {
+  /* Les médias viennent tous du téléphone de Mariane, donc verticaux. Le
+     gabarit suit le matériau plutôt que l'inverse. */
+  /* Le nombre de colonnes est fixe par palier, pas en auto-fill : la case
+     double occupe 2 colonnes ET 2 rangées, donc la hauteur de rangée doit
+     valoir la largeur de colonne fois 4/3 pour que tout reste au format
+     3/4. C'est ce calcul qui remplit la grille sans trou. Neuf cases dont
+     une double font 12 unités, un compte qui tombe juste sur 2, 3 et 4
+     colonnes. */
+  .galerie-cadre {
+    container-type: inline-size;
     margin-top: 2.5rem;
+  }
+
+  .galerie {
+    --colonnes: 2;
+    --gouttiere: 1.25rem;
     display: grid;
-    gap: 1.25rem;
-    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: var(--gouttiere);
+    grid-template-columns: repeat(var(--colonnes), 1fr);
+    grid-auto-rows: calc(
+      (100cqw - (var(--colonnes) - 1) * var(--gouttiere)) / var(--colonnes) *
+        4 / 3
+    );
+  }
+
+  @container (min-width: 34rem) {
+    .galerie {
+      --colonnes: 3;
+    }
+  }
+
+  @container (min-width: 52rem) {
+    .galerie {
+      --colonnes: 4;
+    }
+  }
+
+  .galerie__cadre--grand {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .galerie__cadre {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--rayon);
+    background: var(--mer-brume);
+  }
+
+  .galerie__cadre :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .instagram {

@@ -1,0 +1,48 @@
+---
+// L'autoplay est natif, donc il marche sans JavaScript. C'est le script de
+// Base.astro, posé dans le <head>, qui met en pause à la première image quand
+// le visiteur a demandé moins d'animations.
+//
+// La piste de sous-titres est vide parce que ces extraits n'ont aucune bande
+// son (encodés avec -an). Sans elle, axe et Lighthouse signalent une vidéo
+// sans sous-titres et l'accessibilité tombe sous 100.
+type Props = {
+  source: string;
+  affiche: import("astro").ImageMetadata;
+  description: string;
+};
+
+const { source, affiche, description } = Astro.props;
+---
+
+<video
+  class="video"
+  poster={affiche.src}
+  width={affiche.width}
+  height={affiche.height}
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="metadata"
+  aria-label={description}
+  data-anime
+>
+  <source src={source} type="video/mp4" />
+  <track
+    kind="captions"
+    src="/videos/sans-dialogue.vtt"
+    srclang="fr"
+    label="Aucun dialogue"
+    default
+  />
+</video>
+
+<style>
+  .video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>

@@ -2,7 +2,8 @@
 import { site } from "../data/site";
 import Signature from "./Signature.astro";
 import Soleil from "./Soleil.astro";
-import MediaAbsent from "./MediaAbsent.astro";
+import Video from "./Video.astro";
+import affiche from "../assets/gold-hero-affiche.jpg";
 ---
 
 <section class="hero">
@@ -25,16 +26,25 @@ import MediaAbsent from "./MediaAbsent.astro";
       </div>
     </div>
 
-    <div class="hero__media">
-      <MediaAbsent
-        legende="Vidéo d'accueil — 8 à 12 s, en boucle, sans son. Mariane anime, le groupe suit."
-        ratio="4 / 3"
+    <figure class="hero__media">
+      <Video
+        source="/videos/gold-hero.mp4"
+        affiche={affiche}
+        description="Mariane anime un cours de Zumba Gold. Derrière elle, dans le miroir, le groupe lève les bras en même temps qu'elle."
       />
-    </div>
+    </figure>
   </div>
 </section>
 
 <style>
+  .hero__media {
+    margin: 0;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--rayon-large);
+    box-shadow: var(--ombre-levee);
+  }
+
   .hero {
     position: relative;
     overflow: hidden;

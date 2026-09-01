@@ -342,10 +342,19 @@ Ne pas revenir dessus sans raison explicite.
 
 ## Ce qui manque encore
 
-Cherchez `MediaAbsent` et `TODO`.
+Cherchez `TODO`.
 
-- **Photos et vidéos** : tous les emplacements sont réservés et légendés avec ce
-  qu'on attend à chaque endroit.
+- **Zumba Kids** : la photo a été prise en classe, sans autorisation
+  parentale, donc le visage de l'enfant est masqué par un emoji. Ça tient
+  parce qu'il est le seul reconnaissable, et Mariane l'a validé. Aucune vidéo
+  d'enfants n'est publiable pour la même raison : celles de la kermesse
+  montrent une vingtaine de visages nets, et la caméra est derrière Mariane,
+  donc il n'existe aucun cadrage qui la garde elle sans eux. La vraie sortie
+  est une prise de vue en parascolaire ou en camp, où l'organisme fait signer
+  les autorisations — **caméra derrière le groupe, Mariane de face, enfants de
+  dos**, ce qui règle le droit à l'image par le cadrage.
+- **Le composant `MediaAbsent`** a été supprimé quand le dernier emplacement a
+  été rempli. Il est dans l'historique si un trou réapparaît.
 - **Témoignages** : la section disparaît du build tant qu'aucun n'a `publie: true`.
 - **Formulaire** : jamais essayé de bout en bout. Web3Forms refuse une
   redirection hors domaine, donc l'envoi ne se teste ni en local ni en

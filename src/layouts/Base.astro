@@ -1,6 +1,9 @@
 ---
+import { getImage } from "astro:assets";
+
 import "@fontsource-variable/fraunces";
 import "../styles/global.css";
+import portrait from "../assets/portrait.jpg";
 
 type Props = {
   titre: string;
@@ -13,6 +16,18 @@ type Props = {
 
 const { titre, description, navigation = true, indexable = true } = Astro.props;
 const canonique = new URL(Astro.url.pathname, Astro.site);
+
+// Toutes les photos disponibles sont verticales. Cadrer en 1200 x 630 depuis
+// le haut garde son visage plutôt que de le couper.
+const partage = await getImage({
+  src: portrait,
+  width: 1200,
+  height: 630,
+  format: "jpeg",
+  fit: "cover",
+  position: "top",
+});
+const imagePartage = new URL(partage.src, Astro.site);
 ---
 
 <!doctype html>
@@ -30,12 +45,38 @@ const canonique = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={titre} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonique} />
+    <meta property="og:image" content={imagePartage} />
+    <meta
+      property="og:image:alt"
+      content="Mariane Carlo Rollot en studio, bras ouverts, en plein mouvement"
+    />
     <meta name="twitter:card" content="summary_large_image" />
 
     <meta name="theme-color" content="#0b5c64" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline>
+      // Posé dans le <head> pour être en place avant que la première vidéo
+      // existe : l'écoute en capture attrape l'événement « play » et met en
+      // pause avant qu'une image bouge.
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.addEventListener(
+          "play",
+          (evenement) => {
+            const cible = evenement.target;
+            if (
+              cible instanceof HTMLVideoElement &&
+              cible.dataset.anime !== undefined
+            ) {
+              cible.pause();
+            }
+          },
+          true,
+        );
+      }
+    </script>
 
     <slot name="tete" />
   </head>
