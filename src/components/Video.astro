@@ -6,6 +6,11 @@
 // La piste de sous-titres est vide parce que ces extraits n'ont aucune bande
 // son (encodés avec -an). Sans elle, axe et Lighthouse signalent une vidéo
 // sans sous-titres et l'accessibilité tombe sous 100.
+// L'affiche passe par getImage plutôt que par son import brut : l'attribut
+// poster ne prend qu'une URL, donc Astro ne l'optimise pas tout seul. Celle du
+// hero est l'élément LCP sur mobile, et la servir en JPEG coûtait 450 ms.
+import { getImage } from "astro:assets";
+
 type Props = {
   source: string;
   affiche: import("astro").ImageMetadata;
@@ -13,11 +18,17 @@ type Props = {
 };
 
 const { source, affiche, description } = Astro.props;
+
+const posterOptimise = await getImage({
+  src: affiche,
+  format: "webp",
+  width: affiche.width,
+});
 ---
 
 <video
   class="video"
-  poster={affiche.src}
+  poster={posterOptimise.src}
   width={affiche.width}
   height={affiche.height}
   autoplay
