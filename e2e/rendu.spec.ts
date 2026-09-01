@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { PAGES } from "./pages";
 
 // Les contraintes non négociables d'AGENTS.md, transformées en assertions :
@@ -143,4 +143,57 @@ test("ne laisse jamais deux noms de villes se chevaucher", async ({ page }) => {
     });
 
   expect(chevauchements).toEqual([]);
+});
+
+// Ce qu'on promet sous prefers-reduced-motion, ce n'est pas « la carte reste
+// lisible » — elle l'est de toute façon une fois la cascade finie — c'est
+// qu'aucun point ne bouge. Seule la déclaration le dit; une capture prise
+// après coup ne distingue pas les deux cas.
+const villesAnimees = (page: Page) =>
+  page
+    .locator(".zone__point, .zone__nom")
+    .evaluateAll((elements) =>
+      elements
+        .filter((element) => getComputedStyle(element).animationName !== "none")
+        .map(
+          (element) =>
+            element.textContent?.trim() ||
+            `point ${element.getAttribute("cx")}`,
+        ),
+    );
+
+test.describe("carte des villes", () => {
+  // Sans ce cas, les deux suivants passeraient encore après la suppression
+  // pure et simple de la cascade.
+  test("anime ses points quand elle entre dans le champ", async ({ page }) => {
+    await page.goto("/");
+    await page.locator(".zone").scrollIntoViewIfNeeded();
+
+    await expect(page.locator(".zone")).toHaveClass(/zone--anime/u);
+    expect(await villesAnimees(page)).not.toEqual([]);
+  });
+
+  test.describe("sans JavaScript", () => {
+    test.use({ javaScriptEnabled: false });
+
+    test("montre ses villes sans rien animer", async ({ page }) => {
+      await page.goto("/");
+
+      expect(await villesAnimees(page)).toEqual([]);
+    });
+  });
+
+  // La préférence s'émule par `page.emulateMedia` et non par
+  // `test.use({ reducedMotion })` : en Playwright 1.62 la seconde forme est
+  // sans effet, sur Chromium comme sur WebKit, et le test passait alors en
+  // vérifiant une règle dans le cas où elle ne s'applique pas.
+  test("ne fait bouger aucun point pour qui demande moins d'animations", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await page.locator(".zone").scrollIntoViewIfNeeded();
+
+    expect(await villesAnimees(page)).toEqual([]);
+  });
 });

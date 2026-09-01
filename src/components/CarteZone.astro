@@ -28,17 +28,31 @@ const projette = ({
 // connaît pas la région.
 const REPERES = new Set(["Laval", "Montréal"]);
 
-const villes = villesOuElleEnseigne.map((ville) => {
-  const { x, y } = projette(ville);
-  return {
-    nom: ville.nom,
-    x,
-    y,
-    estUnRepere: REPERES.has(ville.nom),
-    gauche: (x / largeur) * 100,
-    haut: (y / hauteur) * 100,
-  };
-});
+const projetees = villesOuElleEnseigne.map((ville) => ({
+  nom: ville.nom,
+  ...projette(ville),
+}));
+
+// La cascade part de Laval et gagne les villes de proche en proche : c'est le
+// trajet qu'elle fait, et l'ordre le raconte sans qu'aucun texte ait à le dire.
+const depart = projetees.find(({ nom }) => nom === "Laval") ?? projetees[0];
+
+const ecartAuDepart = ({ x, y }: { x: number; y: number }) =>
+  Math.hypot(x - depart.x, y - depart.y);
+
+const ordreDepuisLaval = [...projetees]
+  .sort((un, autre) => ecartAuDepart(un) - ecartAuDepart(autre))
+  .map(({ nom }) => nom);
+
+const villes = projetees.map(({ nom, x, y }) => ({
+  nom,
+  x,
+  y,
+  estUnRepere: REPERES.has(nom),
+  gauche: (x / largeur) * 100,
+  haut: (y / hauteur) * 100,
+  rang: ordreDepuisLaval.indexOf(nom),
+}));
 
 const nomsDeVilles = villes.map((ville) => ville.nom);
 ---
@@ -67,6 +81,7 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
               "zone__point",
               { "zone__point--repere": ville.estUnRepere },
             ]}
+            style={`--rang: ${ville.rang}`}
             cx={ville.x}
             cy={ville.y}
             r="9"
@@ -79,7 +94,7 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
       villes.map((ville) => (
         <span
           class:list={["zone__nom", { "zone__nom--repere": ville.estUnRepere }]}
-          style={`left: ${ville.gauche}%; top: ${ville.haut}%`}
+          style={`left: ${ville.gauche}%; top: ${ville.haut}%; --rang: ${ville.rang}`}
           aria-hidden="true"
         >
           {ville.nom}
@@ -97,6 +112,28 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     </span>
   </figcaption>
 </figure>
+
+<script is:inline>
+  // La cascade attend que la carte entre dans le champ : jouée au chargement,
+  // elle se déroule pendant qu'on lit le hero et personne ne la voit. Sans ce
+  // script, la carte reste telle que le HTML la livre — complète.
+  {
+    const carte = document.querySelector(".zone");
+
+    const observateur = new IntersectionObserver(
+      (entrees) => {
+        for (const entree of entrees) {
+          if (!entree.isIntersecting) continue;
+          entree.target.classList.add("zone--anime");
+          observateur.unobserve(entree.target);
+        }
+      },
+      { threshold: 0.3 },
+    );
+
+    if (carte) observateur.observe(carte);
+  }
+</script>
 
 <style>
   .zone {
@@ -199,5 +236,44 @@ const nomsDeVilles = villes.map((ville) => ville.nom);
     gap: 0.35rem;
     color: var(--encre-doux);
     font-size: 0.8rem;
+  }
+
+  /* Les points s'allument depuis Laval, une ville à la fois : la carte se
+     dessine au lieu d'être posée. Le déclenchement appartient au script, qui
+     attend qu'elle entre dans le champ. */
+  .zone--anime .zone__point {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: eclot 520ms cubic-bezier(0.34, 1.32, 0.64, 1) backwards;
+  }
+
+  /* Le nom porte déjà un translate qui le centre : lui animer sa transform le
+     décrocherait de son point. */
+  .zone--anime .zone__nom {
+    animation: parait 520ms ease-out backwards;
+  }
+
+  .zone--anime .zone__point,
+  .zone--anime .zone__nom {
+    animation-delay: calc(var(--rang) * 90ms);
+  }
+
+  @keyframes eclot {
+    from {
+      transform: scale(0);
+    }
+  }
+
+  @keyframes parait {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zone--anime .zone__point,
+    .zone--anime .zone__nom {
+      animation: none;
+    }
   }
 </style>
