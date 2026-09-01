@@ -173,6 +173,16 @@ puis une passe mobile bridée en 4G, qui est le défaut de Lighthouse quand
 aucun préréglage n'est donné. La deuxième double le temps de l'étape, et c'est
 elle qui compte — Mariane montre le site depuis son téléphone.
 
+Les deux passes écrivent leur collecte dans le même `.lighthouseci/`, donc la
+seconde efface la première. Sans conséquence — les assertions tournent en
+mémoire, passe par passe — mais les rapports qu'on relit ensuite sont toujours
+ceux de la passe mobile, quel que soit le dossier où on les lit.
+
+**Mesurer Lighthouse à froid.** Une mesure prise juste après `pnpm check` perd
+quatre points de performance sur une machine encore occupée. Comparée à une
+baseline mesurée au repos, elle fait voir une régression qui n'existe pas —
+c'est arrivé.
+
 Les tests E2E servent `dist/` avec `sirv`, pas avec `astro preview` : ce dernier
 se démonise, donc Playwright voit son processus mourir aussitôt et abandonne.
 Toujours avec `--dev` : sinon sirv met en cache la taille des fichiers à son
@@ -180,6 +190,12 @@ démarrage et sert ensuite un build plus récent **tronqué** à l'ancienne
 longueur — page blanche, ou « Parse Error: Expected HTTP/ » dans les tests.
 Deux navigateurs, Chromium et WebKit — WebKit parce que Mariane montre le site
 depuis son téléphone, et que c'est Safari qui s'y exécute.
+
+**`test.use({ reducedMotion })` est sans effet en Playwright 1.62**, sur les
+deux navigateurs : la page répond « no-preference » quoi qu'on demande. Un test
+d'accessibilité écrit ainsi passe en vérifiant une règle dans le cas où elle ne
+s'applique jamais. La forme qui marche est `page.emulateMedia()`, appelée avant
+`goto`.
 
 ## Voir le site pendant qu'on le modifie
 
