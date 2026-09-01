@@ -67,6 +67,11 @@ const imagePartage = new URL(partage.src, Astro.site);
 
     <meta name="theme-color" content="#0b5c64" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {
+      /* iOS ignore les icônes du manifeste et n'accepte pas le SVG : sans ce
+        PNG, l'écran d'accueil affiche une capture de la page. */
+    }
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
