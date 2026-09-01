@@ -363,10 +363,11 @@ Ne pas revenir dessus sans raison explicite.
 - **Le composant `MediaAbsent`** a été supprimé quand le dernier emplacement a
   été rempli. Il est dans l'historique si un trou réapparaît.
 - **Témoignages** : la section disparaît du build tant qu'aucun n'a `publie: true`.
-- **Fiche Google Business** : à créer. Pour du service local, elle rapporte
-  souvent plus que le référencement du site. Nom `Mariane Carlo Rollot` sans
-  « Zumba » — la marque est réservée dans un nom d'entreprise, alors qu'elle
-  est attendue dans la description.
+- **Fiche Google Business** : créée le 1er septembre 2026, en attente de
+  validation par Google. Une fois validée, y reprendre les photos du site et
+  la zone desservie. Le nom reste `Mariane Carlo Rollot` sans « Zumba » — la
+  marque est réservée dans un nom d'entreprise, alors qu'elle est attendue
+  dans la description.
 
 ## Suivi
 
