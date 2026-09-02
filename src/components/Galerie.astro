@@ -197,6 +197,22 @@ const media: Element[] = [
     object-fit: cover;
   }
 
+  /* La photo respire dans son cadre, qui la rogne déjà. `scale` plutôt que
+     `transform` : la propriété est indépendante, il n'y a rien à écraser.
+     Réservé aux pointeurs — sur un écran tactile le survol reste collé après
+     le tap, et la vignette resterait agrandie. */
+  @media (hover: hover) {
+    .galerie__cadre :global(img),
+    .galerie__cadre :global(video) {
+      transition: scale 400ms ease;
+    }
+
+    .galerie__cadre:hover :global(img),
+    .galerie__cadre:hover :global(video) {
+      scale: 1.04;
+    }
+  }
+
   .instagram {
     margin-top: 3rem;
     display: inline-flex;
