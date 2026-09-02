@@ -30,9 +30,12 @@ const donneesStructurees = {
     addressRegion: "QC",
     addressCountry: "CA",
   },
-  sameAs: site.instagram.actif
-    ? [`https://instagram.com/${site.instagram.handle}`]
-    : undefined,
+  sameAs: [
+    site.ficheGoogle,
+    ...(site.instagram.actif
+      ? [`https://instagram.com/${site.instagram.handle}`]
+      : []),
+  ],
   areaServed: [
     ...new Set([
       ...villesOuElleEnseigne.map((ville) => ville.nom),

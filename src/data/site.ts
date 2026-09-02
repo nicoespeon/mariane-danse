@@ -13,6 +13,11 @@ export const site = {
     actif: true,
     handle: "la_mere_quon_voit_danser",
   },
+  // Validée le 2 septembre 2026. Sert le `sameAs` du JSON-LD : c'est ce qui
+  // dit à Google que le site et la fiche désignent la même personne, et le
+  // site vise justement les recherches locales.
+  ficheGoogle:
+    "https://www.google.com/maps/place/Mariane+Carlo+Rollot/data=!4m2!3m1!1s0x0:0x15df18795fd8ede4",
 } as const;
 
 // Le certificat mentionne une date de validité qui se renouvelle chaque année :

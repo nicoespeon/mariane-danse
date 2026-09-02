@@ -379,11 +379,11 @@ Ne pas revenir dessus sans raison explicite.
 - **Le composant `MediaAbsent`** a été supprimé quand le dernier emplacement a
   été rempli. Il est dans l'historique si un trou réapparaît.
 - **Témoignages** : la section disparaît du build tant qu'aucun n'a `publie: true`.
-- **Fiche Google Business** : créée le 1er septembre 2026, en attente de
-  validation par Google. Une fois validée, y reprendre les photos du site et
-  la zone desservie. Le nom reste `Mariane Carlo Rollot` sans « Zumba » — la
-  marque est réservée dans un nom d'entreprise, alors qu'elle est attendue
-  dans la description.
+- **Fiche Google Business** : validée par Google le 2 septembre 2026,
+  reprise dans le `sameAs` du JSON-LD. Restent à y reprendre
+  les photos du site et la zone desservie. Le nom reste
+  `Mariane Carlo Rollot` sans « Zumba » — la marque est réservée dans un nom
+  d'entreprise, alors qu'elle est attendue dans la description.
 
 ## Suivi
 
