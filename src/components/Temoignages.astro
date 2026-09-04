@@ -27,7 +27,13 @@ const temoignages = await getCollection(
                   {temoignage.data.source.type === "organisme" ? (
                     <span>
                       {temoignage.data.source.fonction},{" "}
-                      {temoignage.data.source.organisme}
+                      {temoignage.data.source.lien ? (
+                        <a href={temoignage.data.source.lien} rel="noopener">
+                          {temoignage.data.source.organisme}
+                        </a>
+                      ) : (
+                        temoignage.data.source.organisme
+                      )}
                     </span>
                   ) : (
                     <span>

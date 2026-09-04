@@ -4,6 +4,7 @@ auteur: Élodie Hire
 source:
   type: organisme
   fonction: Coordinatrice aux activités
-  organisme: Centre des aîné-e-s de Saint-Léonard
+  organisme: Centre des aîné.e.s de Saint-Léonard
+  lien: https://ainesstleonard.com
 publie: true
 ---

@@ -33,6 +33,9 @@ const temoignages = defineCollection({
         type: z.literal("organisme"),
         fonction: z.string(),
         organisme: z.string(),
+        // Tous n'ont pas de site, et on n'invente pas une adresse pour
+        // uniformiser la carte
+        lien: z.url().optional(),
       }),
       z.object({ type: z.literal("avis-zin") }),
     ]),
